@@ -1579,7 +1579,6 @@ async function updateBalanceDisplay() {
 
     // ✅ Laam part (qiimaha ka qaado best bid offer mar walba)
     const bestSellOfferXLM= await getBestSellOfferprice();
-      const bestSellOfferUSD = bestSellOfferXLM * xlmPriceUSD;
       
     LAAM_TOKEN.currentPrice = bestSellOfferXLM;
 
