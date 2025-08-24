@@ -1593,49 +1593,7 @@ async function updateBalanceDisplay() {
     showError('Failed to load account balance: ' + error.message);
   }
 }
-        // Laam token configuration
-        const LAAM_TOKEN = {
-            code: "Laam",
-            issuer: "GAL4ECDAXNBMJYFCWIJ32HKVIRLCNEXY664CAZYI3EINQWPLXTMEPR64",
-            currentPrice: 0.135
-        };
         
-        let xlmPriceUSD = 0.12;
-
-        // Helper: get best sell offer price (qiimaha iibka ugu fiican)
-        async function getBestSellOfferPrice() {
-            try {
-                const orderbookUrl = `https://horizon.stellar.org/order_book?selling_asset_type=credit_alphanum4&selling_asset_code=${LAAM_TOKEN.code}&selling_asset_issuer=${LAAM_TOKEN.issuer}&buying_asset_type=native&limit=1`;
-                const response = await fetch(orderbookUrl);
-                const data = await response.json();
-                
-                // Ka eeg 'asks' (sell offers)
-                if (data.asks && data.asks.length > 0) {
-                    return parseFloat(data.asks[0].price); // best sell offer (qiimaha iibka ugu hooseeya)
-                }
-            } catch (e) {
-                console.error("Failed to fetch best sell offer:", e);
-            }
-            return LAAM_TOKEN.currentPrice; // fallback haddii error dhaco
-        }
-
-        // Function to test the best sell offer
-        async function testBestSellOffer() {
-            const resultDiv = document.getElementById('testResult');
-            const resultText = document.getElementById('resultText');
-            
-            resultDiv.style.display = 'block';
-            resultText.innerHTML = 'La helayo qiimaha best sell offer...';
-            
-            try {
-                const bestSellOffer = await getBestSellOfferPrice();
-                resultText.innerHTML = `Qiimaha Best Sell Offer ee Laam waa: <strong>${bestSellOffer.toFixed(6)} XLM</strong><br>
-                                       Qiimaha USD: <strong>$${(bestSellOffer * xlmPriceUSD).toFixed(6)}</strong>`;
-            } catch (error) {
-                resultText.innerHTML = `Khalad ayaa dhacay: ${error.message}`;
-            }
-        }
-
     // Load wallet function
     async function loadWallet() {
       if (!currentKeypair) {
