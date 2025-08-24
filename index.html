@@ -1572,15 +1572,10 @@ async function updateBalanceDisplay() {
       }
     });
 
-    // ✅ XLM part (sidiisii ayuu ahaanayaa)
     document.getElementById('xlmBal').textContent = xlmBalance.toFixed(2);
     document.getElementById('xlmUsd').textContent = (xlmBalance * xlmPriceUSD).toFixed(2);
     document.getElementById('xlmPrice').textContent = xlmPriceUSD.toFixed(3);
 
-    // --- ISBEDDELKA HALKAN AYUU KA BILAABMAYA ---
-
-    // 🚀 Laam part (oo hadda ku saleysan qiimaha iibka ugu fiican)
-    
     // U wac hawsha cusub si aad u hesho qiimaha iibka (sell offer)
     const bestSellOfferXLM = await getBestSellOfferPrice(); 
     const bestSellOfferUSD = bestSellOfferXLM * xlmPriceUSD;
@@ -1589,16 +1584,10 @@ async function updateBalanceDisplay() {
     LAAM_TOKEN.currentPrice = bestSellOfferXLM; 
 
     document.getElementById('laamBal').textContent = laamBalance.toFixed(2);
-
-    // USD total balance (oo ku xisaabsan qiimaha iibka)
     document.getElementById('laamUsd').textContent = (laamBalance * bestSellOfferUSD).toFixed(2);
-
-    // Price display: XLM + USD (oo muujinaya qiimaha iibka)
     document.getElementById('laamPrice').textContent = 
       bestSellOfferXLM.toFixed(6) + " XLM (≈ $" + bestSellOfferUSD.toFixed(3) + ")";
     
-    // --- ISBEDDELKA HALKAN AYUU KU DHAMMAANAYAA ---
-
   } catch (error) {
     console.error('Error updating balance display:', error);
     // Halkan waxaad ku dari kartaa fariin qalad ah oo user-ka loo muujiyo
