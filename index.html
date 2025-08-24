@@ -2610,79 +2610,7 @@ if (prices.length < 2) {
     }
   });
 }
-// Function to calculate Laam price based on recent trades
-async function calculateLaamPriceFromRecentTrades() {
-  try {
-    // Fetch recent trades for Laam/XLM pair
-    const tradesUrl = `https://horizon.stellar.org/trades?base_asset_type=credit_alphanum4&base_asset_code=${LAAM_TOKEN.code}&base_asset_issuer=${LAAM_TOKEN.issuer}&counter_asset_type=native&limit=10&order=desc`;
-    
-    const response = await fetch(tradesUrl);
-    const data = await response.json();
-    
-    if (data._embedded && data._embedded.records && data._embedded.records.length > 0) {
-      // Calculate average price from last 5 trades
-      let totalPrice = 0;
-      let count = 0;
       
-      for (let i = 0; i < Math.min(5, data._embedded.records.length); i++) {
-        const trade = data._embedded.records[i];
-        const price = parseFloat(trade.price.n / trade.price.d);
-        totalPrice += price;
-        count++;
-      }
-      
-      const averagePrice = totalPrice / count;
-      return averagePrice;
-    }
-    
-    // Fallback to orderbook if no trades available
-    return await calculateLaamPriceFromOrderbook();
-    
-  } catch (error) {
-    console.error('Error calculating price from trades:', error);
-    return LAAM_TOKEN.currentPrice; // Fallback to default price
-  }
-}
-
-// Function to calculate Laam price from orderbook
-async function calculateLaamPriceFromOrderbook() {
-  try {
-    const orderbookUrl = `https://horizon.stellar.org/order_book?selling_asset_type=credit_alphanum4&selling_asset_code=${LAAM_TOKEN.code}&selling_asset_issuer=${LAAM_TOKEN.issuer}&buying_asset_type=native&limit=5`;
-    
-    const response = await fetch(orderbookUrl);
-    const data = await response.json();
-    
-    if (data.bids && data.bids.length > 0 && data.asks && data.asks.length > 0) {
-      // Calculate mid price from best bid and ask
-      const bestBid = parseFloat(data.bids[0].price);
-      const bestAsk = parseFloat(data.asks[0].price);
-      return (bestBid + bestAsk) / 2;
-    }
-    
-    return LAAM_TOKEN.currentPrice; // Fallback to default price
-    
-  } catch (error) {
-    console.error('Error calculating price from orderbook:', error);
-    return LAAM_TOKEN.currentPrice; // Fallback to default price
-  }
-}
-
-// Update Laam price in your application
-async function updateLaamPrice() {
-  const currentPrice = await calculateLaamPriceFromRecentTrades();
-  
-  // Update the displayed price
-  document.getElementById('laamPrice').textContent = currentPrice.toFixed(6);
-  
-  // Update the USD value of Laam holdings
-  const laamBal = parseFloat(document.getElementById('laamBal').textContent);
-  document.getElementById('laamUsd').textContent = (laamBal * currentPrice * xlmPriceUSD).toFixed(2);
-  
-  // Also update the overview price display
-  document.getElementById('overviewLaamPriceXLM').textContent = currentPrice.toFixed(6);
-  
-  console.log('Laam price updated to:', currentPrice);
-      }
 // Update overview tab with real data
 async function updateOverview() {
   try {
@@ -2730,6 +2658,45 @@ async function updateOverview() {
     createPriceChart(); // Fallback to sample chart
   }
 }         
-</script>             
+<!-- dhammaadka script-kaaga -->
+  <script>
+    ...  // functions kale oo hore u jiray
+
+    // Refresh Laam price dynamically from orderbook
+    async function updateLaamPrice() {
+      try {
+        const orderbookUrl = `https://horizon.stellar.org/order_book?selling_asset_type=credit_alphanum4&selling_asset_code=${LAAM_TOKEN.code}&selling_asset_issuer=${LAAM_TOKEN.issuer}&buying_asset_type=native&limit=1`;
+        const response = await fetch(orderbookUrl);
+        const data = await response.json();
+
+        if (data.asks && data.asks.length > 0 && data.bids && data.bids.length > 0) {
+          const bestAsk = parseFloat(data.asks[0].price);
+          const bestBid = parseFloat(data.bids[0].price);
+          const midPrice = (bestAsk + bestBid) / 2;
+
+          // Update global price
+          LAAM_TOKEN.currentPrice = midPrice;
+
+          // Update balance USD calculation
+          const laamBal = parseFloat(document.getElementById("laamBal").textContent);
+          document.getElementById("laamPrice").textContent = midPrice.toFixed(4);
+          document.getElementById("laamUsd").textContent = (laamBal * midPrice).toFixed(2);
+
+          // Update overview tab
+          document.getElementById("overviewLaamPriceXLM").textContent = midPrice.toFixed(6);
+
+          console.log("Laam price updated dynamically:", midPrice);
+        }
+      } catch (e) {
+        console.error("Failed to update Laam price:", e);
+      }
+    }
+
+    // Call first time after login
+    updateLaamPrice();
+
+    // Refresh every 20 seconds
+    setInterval(updateLaamPrice, 20000);
+  </script>
 </body>
-</html>
+</html> 
