@@ -1011,7 +1011,7 @@
       description: "Laam is a limited supply token on Stellar with a maximum of 1,335,577 tokens, issued only once to preserve value.",
       image: "https://i.ibb.co/r28SP1bN/20250802-225108.png",
       maxSupply: 1335577,
-      currentPrice: 0.06
+      currentPrice: 0.135
     };
 
     // Global variables
@@ -1530,8 +1530,7 @@ function switchTab(tabName) {
         });
       }
     }
-              
-// Helper: get best sell offer price (qiimaha iibka ugu fiican)
+    // Helper: get best sell offer price (qiimaha iibka ugu fiican)
 async function getBestSellOfferPrice() {
   try {
     const orderbookUrl = `https://horizon.stellar.org/order_book?selling_asset_type=credit_alphanum4&selling_asset_code=${LAAM_TOKEN.code}&selling_asset_issuer=${LAAM_TOKEN.issuer}&buying_asset_type=native&limit=1`;
@@ -1546,7 +1545,7 @@ async function getBestSellOfferPrice() {
     console.error("Failed to fetch best sell offer:", e);
   }
   return LAAM_TOKEN.currentPrice; // fallback haddii error dhaco
-}
+}          
 
 // Update balance display function
 async function updateBalanceDisplay() {
@@ -1594,22 +1593,11 @@ async function updateBalanceDisplay() {
     showError('Failed to load account balance: ' + error.message);
   }
 }
-        </div>
-        
-        <button class="button" onclick="testBestSellOffer()">Test Best Sell Offer</button>
-        
-        <div id="testResult" class="result">
-            <h3>Natiijo:</h3>
-            <p id="resultText"></p>
-        </div>
-    </div>
-
-    <script>
         // Laam token configuration
         const LAAM_TOKEN = {
             code: "Laam",
             issuer: "GAL4ECDAXNBMJYFCWIJ32HKVIRLCNEXY664CAZYI3EINQWPLXTMEPR64",
-            currentPrice: 0.06
+            currentPrice: 0.135
         };
         
         let xlmPriceUSD = 0.12;
