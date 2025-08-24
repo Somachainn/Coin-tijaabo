@@ -1572,27 +1572,20 @@ async function updateBalanceDisplay() {
       }
     });
 
+    // ✅ XLM part
     document.getElementById('xlmBal').textContent = xlmBalance.toFixed(2);
     document.getElementById('xlmUsd').textContent = (xlmBalance * xlmPriceUSD).toFixed(2);
     document.getElementById('xlmPrice').textContent = xlmPriceUSD.toFixed(3);
 
-    // U wac hawsha cusub si aad u hesho qiimaha iibka (sell offer)
-    const bestSellOfferXLM = await getBestSellOfferPrice(); 
-    const bestSellOfferUSD = bestSellOfferXLM * xlmPriceUSD;
-
-    // Cusboonaysii qiimaha hadda ee LAAM adigoo isticmaalaya qiimaha cusub
-    LAAM_TOKEN.currentPrice = bestSellOfferXLM; 
+    // ✅ Laam part (qiimaha ka qaado best bid offer mar walba)
+    const bestSellOfferXLM= await getBestSellOfferprice();
+      const bestSellOfferUSD = bestSellOfferXLM * xlmPriceUSD;
+      
+    LAAM_TOKEN.currentPrice = bestSellOfferXLM;
 
     document.getElementById('laamBal').textContent = laamBalance.toFixed(2);
-    document.getElementById('laamUsd').textContent = (laamBalance * bestSellOfferUSD).toFixed(2);
-    document.getElementById('laamPrice').textContent = 
-      bestSellOfferXLM.toFixed(6) + " XLM (≈ $" + bestSellOfferUSD.toFixed(3) + ")";
-    
-  } catch (error) {
-    console.error('Error updating balance display:', error);
-    // Halkan waxaad ku dari kartaa fariin qalad ah oo user-ka loo muujiyo
-  }
-}
+    document.getElementById('laamUsd').textContent = (laamBalance * bestBid).toFixed(2);
+    document.getElementById('laamPrice').textContent = bestBid.toFixed(4);
 
     console.log('Balance display updated successfully');
     
