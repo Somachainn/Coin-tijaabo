@@ -1530,15 +1530,15 @@ function switchTab(tabName) {
         });
       }
     }
-      // Helper: get best sell offer price (qiimaha iibka ugu fiican)
+              
+// Helper: get best sell offer price (qiimaha iibka ugu fiican)
 async function getBestSellOfferPrice() {
   try {
-    // URL-ku waa isku mid, wuxuu soo qaadaa buugga dalabka (order book) oo dhan
     const orderbookUrl = `https://horizon.stellar.org/order_book?selling_asset_type=credit_alphanum4&selling_asset_code=${LAAM_TOKEN.code}&selling_asset_issuer=${LAAM_TOKEN.issuer}&buying_asset_type=native&limit=1`;
     const response = await fetch(orderbookUrl);
     const data = await response.json();
     
-    // HALKAN WAA ISBEDDELKA: Ka eeg 'asks' halkii aad ka eegi lahayd 'bids'
+    // Ka eeg 'asks' (sell offers)
     if (data.asks && data.asks.length > 0) {
       return parseFloat(data.asks[0].price); // best sell offer (qiimaha iibka ugu hooseeya)
     }
@@ -1547,7 +1547,8 @@ async function getBestSellOfferPrice() {
   }
   return LAAM_TOKEN.currentPrice; // fallback haddii error dhaco
 }
-      // Update balance display function
+
+// Update balance display function
 async function updateBalanceDisplay() {
   if (!currentKeypair || !server) {
     console.log('No keypair or server available');
@@ -1577,14 +1578,14 @@ async function updateBalanceDisplay() {
     document.getElementById('xlmUsd').textContent = (xlmBalance * xlmPriceUSD).toFixed(2);
     document.getElementById('xlmPrice').textContent = xlmPriceUSD.toFixed(3);
 
-    // ✅ Laam part (qiimaha ka qaado best bid offer mar walba)
-    const bestSellOfferXLM= await getBestSellOfferprice();
+    // ✅ Laam part (qiimaha ka qaado best sell offer mar walba)
+    const bestSellOfferXLM = await getBestSellOfferPrice();
       
     LAAM_TOKEN.currentPrice = bestSellOfferXLM;
 
     document.getElementById('laamBal').textContent = laamBalance.toFixed(2);
-    document.getElementById('laamUsd').textContent = (laamBalance * bestBid).toFixed(2);
-    document.getElementById('laamPrice').textContent = bestBid.toFixed(4);
+    document.getElementById('laamUsd').textContent = (laamBalance * bestSellOfferXLM * xlmPriceUSD).toFixed(2);
+    document.getElementById('laamPrice').textContent = bestSellOfferXLM.toFixed(6);
 
     console.log('Balance display updated successfully');
     
@@ -1593,6 +1594,59 @@ async function updateBalanceDisplay() {
     showError('Failed to load account balance: ' + error.message);
   }
 }
+        </div>
+        
+        <button class="button" onclick="testBestSellOffer()">Test Best Sell Offer</button>
+        
+        <div id="testResult" class="result">
+            <h3>Natiijo:</h3>
+            <p id="resultText"></p>
+        </div>
+    </div>
+
+    <script>
+        // Laam token configuration
+        const LAAM_TOKEN = {
+            code: "Laam",
+            issuer: "GAL4ECDAXNBMJYFCWIJ32HKVIRLCNEXY664CAZYI3EINQWPLXTMEPR64",
+            currentPrice: 0.06
+        };
+        
+        let xlmPriceUSD = 0.12;
+
+        // Helper: get best sell offer price (qiimaha iibka ugu fiican)
+        async function getBestSellOfferPrice() {
+            try {
+                const orderbookUrl = `https://horizon.stellar.org/order_book?selling_asset_type=credit_alphanum4&selling_asset_code=${LAAM_TOKEN.code}&selling_asset_issuer=${LAAM_TOKEN.issuer}&buying_asset_type=native&limit=1`;
+                const response = await fetch(orderbookUrl);
+                const data = await response.json();
+                
+                // Ka eeg 'asks' (sell offers)
+                if (data.asks && data.asks.length > 0) {
+                    return parseFloat(data.asks[0].price); // best sell offer (qiimaha iibka ugu hooseeya)
+                }
+            } catch (e) {
+                console.error("Failed to fetch best sell offer:", e);
+            }
+            return LAAM_TOKEN.currentPrice; // fallback haddii error dhaco
+        }
+
+        // Function to test the best sell offer
+        async function testBestSellOffer() {
+            const resultDiv = document.getElementById('testResult');
+            const resultText = document.getElementById('resultText');
+            
+            resultDiv.style.display = 'block';
+            resultText.innerHTML = 'La helayo qiimaha best sell offer...';
+            
+            try {
+                const bestSellOffer = await getBestSellOfferPrice();
+                resultText.innerHTML = `Qiimaha Best Sell Offer ee Laam waa: <strong>${bestSellOffer.toFixed(6)} XLM</strong><br>
+                                       Qiimaha USD: <strong>$${(bestSellOffer * xlmPriceUSD).toFixed(6)}</strong>`;
+            } catch (error) {
+                resultText.innerHTML = `Khalad ayaa dhacay: ${error.message}`;
+            }
+        }
 
     // Load wallet function
     async function loadWallet() {
