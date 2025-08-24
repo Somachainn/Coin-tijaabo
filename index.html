@@ -1546,7 +1546,7 @@ async function getBestSellOfferPrice() {
   }
   return LAAM_TOKEN.currentPrice; // fallback haddii error dhaco
 }          
-// Update balance display function
+ // Update balance display function
 async function updateBalanceDisplay() {
   if (!currentKeypair || !server) {
     console.log('No keypair or server available');
@@ -1576,16 +1576,17 @@ async function updateBalanceDisplay() {
     document.getElementById('xlmUsd').textContent = (xlmBalance * xlmPriceUSD).toFixed(2);
     document.getElementById('xlmPrice').textContent = xlmPriceUSD.toFixed(3);
 
-    // ✅ Laam part - Qiimaha XLM ee Laam token-ka
+    // ✅ Laam part - Qiimaha USD ee Laam token-ka
     const bestSellOfferXLM = await getBestSellOfferPrice();
-      
-    LAAM_TOKEN.currentPrice = bestSellOfferXLM;
+    const laamPriceUSD = bestSellOfferXLM * xlmPriceUSD;
+    
+    LAAM_TOKEN.currentPrice = laamPriceUSD;
 
     document.getElementById('laamBal').textContent = laamBalance.toFixed(2);
     
-    // HALKAN WAA ISBEDDELKA: Qiimaha Laam wuxuu u eg yahay qiimaha XLM
-    document.getElementById('laamUsd').textContent = (laamBalance * bestSellOfferXLM * xlmPriceUSD).toFixed(2);
-    document.getElementById('laamPrice').textContent = bestSellOfferXLM.toFixed(6);
+    // HALKAN WAA ISBEDDELKA: Qiimaha Laam USD ahaan
+    document.getElementById('laamUsd').textContent = (laamBalance * laamPriceUSD).toFixed(2);
+    document.getElementById('laamPrice').textContent = laamPriceUSD.toFixed(6);
 
     console.log('Balance display updated successfully');
     
