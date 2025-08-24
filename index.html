@@ -1179,8 +1179,9 @@ function switchTab(tabName) {
         d.setHours(d.getHours() - (prices.length - i - 1));
         return d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
       });
-      ‎// Destroy existing chart if it exists
-‎      if (priceChart) {
+    
+        ‎// Destroy existing chart if it exists
+‎       if (priceChart) {
 ‎        priceChart.destroy();
 ‎      }
 ‎      
@@ -1249,8 +1250,7 @@ function switchTab(tabName) {
 ‎          }
 ‎        }
 ‎      });
-‎    }
-      
+‎    }  
     // Update overview tab
     function updateOverview() {
       const currentPrice = 0.135000;
