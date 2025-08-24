@@ -837,12 +837,11 @@
 <div id="overviewContent" class="tab-content">
   <div class="overview-content">
     <div class="price-display">
-      <span id="overviewLaamPriceXLM">0.000000</span> XLM
+      <span id="overviewLaamPriceXLM">0.000000</span>$
     </div>
     <div class="price-change" id="priceChange">Loading price change...</div>
     
     <div class="chart-timeframes">
-      <button class="timeframe-btn active" data-timeframe="1H">1H</button>
       <button class="timeframe-btn active" data-timeframe="1D">1D</button>
       <button class="timeframe-btn" data-timeframe="1W">1W</button>
       <button class="timeframe-btn" data-timeframe="1M">1M</button>
@@ -2545,23 +2544,6 @@ async function createRealPriceChart(timeframe = '1D') {
     priceChart.destroy();
   }
   
-  // If we don't have enough data, show the Stellar.expert iframe
-if (prices.length < 2) {
-  // Hide the canvas
-  ctx.canvas.style.display = 'none';
-  
-  // Create and show the Stellar.expert iframe
-  const iframe = document.createElement('iframe');
-  iframe.onLoad = "var c=this;window.addEventListener('message',function({data,source}){if(c&&source===c.contentWindow&&data.widget===c.src)c.style.height=data.height+'px'},false);";
-  iframe.src = "https://stellar.expert/widget/public/asset/price/Laam-GAL4ECDAXNBMJYFCWIJ32HKVIRLCNEXY664CAZYI3EINQWPLXTMEPR64";
-  iframe.style = "border:none;overflow:hidden;max-width:100%; min-width:300px;max-height:100%;min-height:200px;width:100%; height: 140px;";
-  
-  // Add the iframe to the chart container
-  const chartContainer = document.querySelector('.chart-container');
-  chartContainer.appendChild(iframe);
-  
-  return;
-}
   
   priceChart = new Chart(ctx, {
     type: 'line',
