@@ -1529,47 +1529,67 @@ function switchTab(tabName) {
         });
       }
     }
-
-    // Update balance display function
-    async function updateBalanceDisplay() {
-      if (!currentKeypair || !server) {
-        console.log('No keypair or server available');
-        return;
-      }
-
-      try {
-        console.log('Loading account data...');
-        const account = await server.loadAccount(currentKeypair.publicKey());
-        
-        let xlmBalance = 0;
-        let laamBalance = 0;
-
-        account.balances.forEach(balance => {
-          console.log('Processing balance:', balance);
-          
-          if (balance.asset_type === 'native') {
-            xlmBalance = parseFloat(balance.balance);
-          } else if (balance.asset_code === LAAM_TOKEN.code && balance.asset_issuer === LAAM_TOKEN.issuer) {
-            laamBalance = parseFloat(balance.balance);
-            console.log('Found Laam balance:', laamBalance);
-          }
-        });
-
-        document.getElementById('xlmBal').textContent = xlmBalance.toFixed(2);
-        document.getElementById('xlmUsd').textContent = (xlmBalance * xlmPriceUSD).toFixed(2);
-        document.getElementById('xlmPrice').textContent = xlmPriceUSD.toFixed(3);
-
-        document.getElementById('laamBal').textContent = laamBalance.toFixed(2);
-        document.getElementById('laamUsd').textContent = (laamBalance * LAAM_TOKEN.currentPrice).toFixed(2);
-        document.getElementById('laamPrice').textContent = LAAM_TOKEN.currentPrice.toFixed(2);
-
-        console.log('Balance display updated successfully');
-        
-      } catch (error) {
-        console.error('Error updating balance display:', error);
-        showError('Failed to load account balance: ' + error.message);
-      }
+      // Helper: get best bid price
+async function getBestBidPrice() {
+  try {
+    const orderbookUrl = `https://horizon.stellar.org/order_book?selling_asset_type=credit_alphanum4&selling_asset_code=${LAAM_TOKEN.code}&selling_asset_issuer=${LAAM_TOKEN.issuer}&buying_asset_type=native&limit=1`;
+    const response = await fetch(orderbookUrl);
+    const data = await response.json();
+    
+    if (data.bids && data.bids.length > 0) {
+      return parseFloat(data.bids[0].price); // best bid
     }
+  } catch (e) {
+    console.error("Failed to fetch best bid:", e);
+  }
+  return LAAM_TOKEN.currentPrice; // fallback haddii error dhaco
+}
+
+      // Update balance display function
+async function updateBalanceDisplay() {
+  if (!currentKeypair || !server) {
+    console.log('No keypair or server available');
+    return;
+  }
+
+  try {
+    console.log('Loading account data...');
+    const account = await server.loadAccount(currentKeypair.publicKey());
+    
+    let xlmBalance = 0;
+    let laamBalance = 0;
+
+    account.balances.forEach(balance => {
+      if (balance.asset_type === 'native') {
+        xlmBalance = parseFloat(balance.balance);
+      } else if (
+        balance.asset_code === LAAM_TOKEN.code &&
+        balance.asset_issuer === LAAM_TOKEN.issuer
+      ) {
+        laamBalance = parseFloat(balance.balance);
+      }
+    });
+
+    // ✅ XLM part
+    document.getElementById('xlmBal').textContent = xlmBalance.toFixed(2);
+    document.getElementById('xlmUsd').textContent = (xlmBalance * xlmPriceUSD).toFixed(2);
+    document.getElementById('xlmPrice').textContent = xlmPriceUSD.toFixed(3);
+
+    // ✅ Laam part (qiimaha ka qaado best bid offer mar walba)
+    const bestBid = await getBestBidPrice();
+    LAAM_TOKEN.currentPrice = bestBid;
+
+    document.getElementById('laamBal').textContent = laamBalance.toFixed(2);
+    document.getElementById('laamUsd').textContent = (laamBalance * bestBid).toFixed(2);
+    document.getElementById('laamPrice').textContent = bestBid.toFixed(4);
+
+    console.log('Balance display updated successfully');
+    
+  } catch (error) {
+    console.error('Error updating balance display:', error);
+    showError('Failed to load account balance: ' + error.message);
+  }
+}
 
     // Load wallet function
     async function loadWallet() {
