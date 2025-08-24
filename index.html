@@ -1530,22 +1530,23 @@ function switchTab(tabName) {
         });
       }
     }
-      // Helper: get best bid price
-async function getBestBidPrice() {
+      // Helper: get best sell offer price (qiimaha iibka ugu fiican)
+async function getBestSellOfferPrice() {
   try {
+    // URL-ku waa isku mid, wuxuu soo qaadaa buugga dalabka (order book) oo dhan
     const orderbookUrl = `https://horizon.stellar.org/order_book?selling_asset_type=credit_alphanum4&selling_asset_code=${LAAM_TOKEN.code}&selling_asset_issuer=${LAAM_TOKEN.issuer}&buying_asset_type=native&limit=1`;
     const response = await fetch(orderbookUrl);
     const data = await response.json();
     
-    if (data.bids && data.bids.length > 0) {
-      return parseFloat(data.bids[0].price); // best bid
+    // HALKAN WAA ISBEDDELKA: Ka eeg 'asks' halkii aad ka eegi lahayd 'bids'
+    if (data.asks && data.asks.length > 0) {
+      return parseFloat(data.asks[0].price); // best sell offer (qiimaha iibka ugu hooseeya)
     }
   } catch (e) {
-    console.error("Failed to fetch best bid:", e);
+    console.error("Failed to fetch best sell offer:", e);
   }
   return LAAM_TOKEN.currentPrice; // fallback haddii error dhaco
 }
-
       // Update balance display function
 async function updateBalanceDisplay() {
   if (!currentKeypair || !server) {
@@ -1571,26 +1572,38 @@ async function updateBalanceDisplay() {
       }
     });
 
-    // ✅ XLM part
+    // ✅ XLM part (sidiisii ayuu ahaanayaa)
     document.getElementById('xlmBal').textContent = xlmBalance.toFixed(2);
     document.getElementById('xlmUsd').textContent = (xlmBalance * xlmPriceUSD).toFixed(2);
     document.getElementById('xlmPrice').textContent = xlmPriceUSD.toFixed(3);
 
-    // 🚀 Laam part (qiimaha XLM + USD)
-    const bestBidXLM = await getBestBidPrice();  // tusaale: 0.135
-    const bestBidUSD = bestBidXLM * xlmPriceUSD; // tusaale: 0.056
+    // --- ISBEDDELKA HALKAN AYUU KA BILAABMAYA ---
 
-    LAAM_TOKEN.currentPrice = bestBidXLM; // weli XLM ayuu ku saleysan yahay
+    // 🚀 Laam part (oo hadda ku saleysan qiimaha iibka ugu fiican)
+    
+    // U wac hawsha cusub si aad u hesho qiimaha iibka (sell offer)
+    const bestSellOfferXLM = await getBestSellOfferPrice(); 
+    const bestSellOfferUSD = bestSellOfferXLM * xlmPriceUSD;
+
+    // Cusboonaysii qiimaha hadda ee LAAM adigoo isticmaalaya qiimaha cusub
+    LAAM_TOKEN.currentPrice = bestSellOfferXLM; 
 
     document.getElementById('laamBal').textContent = laamBalance.toFixed(2);
 
-    // USD total balance
-    document.getElementById('laamUsd').textContent = (laamBalance * bestBidUSD).toFixed(2);
+    // USD total balance (oo ku xisaabsan qiimaha iibka)
+    document.getElementById('laamUsd').textContent = (laamBalance * bestSellOfferUSD).toFixed(2);
 
-    // Price display: XLM + USD
+    // Price display: XLM + USD (oo muujinaya qiimaha iibka)
     document.getElementById('laamPrice').textContent = 
-      bestBidXLM.toFixed(6) + " XLM (≈ $" + bestBidUSD.toFixed(3) + ")";
+      bestSellOfferXLM.toFixed(6) + " XLM (≈ $" + bestSellOfferUSD.toFixed(3) + ")";
     
+    // --- ISBEDDELKA HALKAN AYUU KU DHAMMAANAYAA ---
+
+  } catch (error) {
+    console.error('Error updating balance display:', error);
+    // Halkan waxaad ku dari kartaa fariin qalad ah oo user-ka loo muujiyo
+  }
+}
 
     console.log('Balance display updated successfully');
     
