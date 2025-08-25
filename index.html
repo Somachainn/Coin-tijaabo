@@ -508,27 +508,28 @@
   .cta.sell{ background:var(--err); color:#fff; box-shadow:0 4px 14px rgba(220,53,69,0.3); }
   .cta.sell:hover{ background:#c82333; box-shadow:0 6px 20px rgba(220,53,69,0.4); transform:translateY(-2px); }
 
-  /* My Orders Modal Styles */
-  .my-orders-modal{ display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
-  .my-orders-modal.show{ display:flex; }
-  .my-orders-modal-content{
+  <!-- My Orders Modal Styles -->
+<style>
+.my-orders-modal{ display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
+.my-orders-modal.show{ display:flex; }
+.my-orders-modal-content{
     background:var(--card); border:1px solid var(--line); border-radius:var(--rad); 
     box-shadow:0 20px 40px rgba(0,0,0,0.15); padding:30px; max-width:500px; width:90%; 
     max-height:90vh; overflow-y:auto;
-  }
-  .my-orders-modal-header{
+}
+.my-orders-modal-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:25px;
-  }
-  .my-orders-modal-title{
+}
+.my-orders-modal-title{
     font-size:1.5rem;
     font-weight:700;
     color:var(--brand);
     margin:0;
-  }
-  .my-orders-modal-close{
+}
+.my-orders-modal-close{
     background:none;
     border:none;
     font-size:1.8rem;
@@ -539,54 +540,80 @@
     height:auto;
     box-shadow:none;
     text-transform:none;
-  }
-  .my-orders-modal-close:hover{
+}
+.my-orders-modal-close:hover{
     color:var(--text);
     transform:none;
     box-shadow:none;
-  }
-  .orders-list {
+}
+.orders-list {
     max-height: 300px;
     overflow-y: auto;
     margin-bottom: 20px;
-  }
-  .order-item {
-    display: flex;
-    justify-content: space-between;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px;
+}
+.order-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 15px;
     padding: 12px;
     border: 1px solid var(--line);
     border-radius: 8px;
     margin-bottom: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-  }
-  .order-item:hover {
+    align-items: center;
+}
+.order-item:hover {
     background-color: #f8f9fa;
-  }
-  .order-item.selected {
+}
+.order-item.selected {
     border-color: var(--brand);
     background-color: rgba(0, 82, 204, 0.1);
-  }
-  .order-type {
+}
+.order-type {
     font-weight: 700;
     text-transform: uppercase;
     font-size: 12px;
-  }
-  .order-type.buy {
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-align: center;
+}
+.order-type.buy {
+    background-color: rgba(40, 167, 69, 0.1);
     color: var(--ok);
-  }
-  .order-type.sell {
+}
+.order-type.sell {
+    background-color: rgba(220, 53, 69, 0.1);
     color: var(--err);
-  }
-  .order-amount, .order-price {
+}
+.order-details {
+    display: flex;
+    flex-direction: column;
+}
+.order-amount {
+    font-weight: 600;
     font-family: 'SF Mono', monospace;
-  }
-  .order-actions{
+}
+.order-price {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-family: 'SF Mono', monospace;
+}
+.order-date {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: right;
+}
+.order-actions{
     display:flex;
     flex-direction:column;
     gap:15px;
-  }
-  .order-action-btn{
+    margin-top: 20px;
+}
+.order-action-btn{
     width:100%;
     padding:15px;
     border:none;
@@ -596,27 +623,86 @@
     cursor:pointer;
     transition:all 0.3s ease;
     text-transform:none;
-  }
-  .edit-order-btn{
+}
+.edit-order-btn{
     background:var(--brand);
     color:white;
     box-shadow:0 4px 16px rgba(25,118,210,0.3);
-  }
-  .edit-order-btn:hover{
+}
+.edit-order-btn:hover{
     background:var(--brand2);
     box-shadow:0 6px 20px rgba(25,118,210,0.4);
     transform:translateY(-2px);
-  }
-  .cancel-order-btn{
+}
+.edit-order-btn:disabled {
+    background: #b0bec5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+.cancel-order-btn{
     background:var(--err);
     color:white;
     box-shadow:0 4px 16px rgba(220,53,69,0.3);
-  }
-  .cancel-order-btn:hover{
+}
+.cancel-order-btn:hover{
     background:#c82333;
     box-shadow:0 6px 20px rgba(220,53,69,0.4);
     transform:translateY(-2px);
-  }
+}
+.cancel-order-btn:disabled {
+    background: #b0bec5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+.no-orders {
+    text-align: center;
+    padding: 30px;
+    color: var(--muted);
+    font-style: italic;
+}
+</style>
+
+<!-- My Orders Modal -->
+<div id="myOrdersModal" class="my-orders-modal">
+    <div class="my-orders-modal-content">
+        <div class="my-orders-modal-header">
+            <h3 class="my-orders-modal-title">My Orders</h3>
+            <button class="my-orders-modal-close" onclick="closeMyOrdersModal()">&times;</button>
+        </div>
+        
+        <div id="ordersList" class="orders-list">
+            <div class="no-orders">No active orders found</div>
+        </div>
+        
+        <div class="order-actions">
+            <button class="order-action-btn edit-order-btn" id="editOrderBtn" onclick="promptEditOffer()" disabled>Edit Order</button>
+            <button class="order-action-btn cancel-order-btn" id="cancelOrderBtn" onclick="confirmCancelOffer()" disabled>Cancel Order</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Order Modal -->
+<div id="editOrderModal" class="trade-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Order</h3>
+            <button class="modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+        <div class="panel">
+            <div class="field">
+                <label>Amount (Laam)</label>
+                <input id="editAmount" type="number" step="0.0001">
+            </div>
+            <div class="field">
+                <label>Price (XLM per Laam)</label>
+                <input id="editPrice" type="number" step="0.0000001">
+            </div>
+            <button class="cta" id="confirmEditBtn">Update Order</button>
+        </div>
+    </div>
+</div>
 
   /* Animation */
   .import-card {
