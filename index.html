@@ -693,51 +693,45 @@
           <button id="addTrustlineBtn">Add Laam Trustline</button>
           <button id="logoutBtn" class="btn-danger">Lock Wallet</button>
         </div>
-
-        <div id="sendForm" class="send-wrap">
-          <h4 style="margin:0 0 10px 0; color:var(--brand)">Send Assets</h4>
-          <div class="send-row">
-            <div><label for="sendAsset">Asset</label><select id="sendAsset"><option value="XLM">XLM</option><option value="LAAM">Laam</option></select></div>
-            <div><label for="sendAmount">Amount</label><input id="sendAmount" type="number" step="0.0000001" placeholder="e.g. 10" /></div>
-          </div>
-          <!-- Send Wizard Modal -->
+        </div>
+            <!-- ✅ Send Wizard Modal -->
 <div id="sendWizard" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:white; padding:20px; border-radius:12px; max-width:420px; width:95%; text-align:center;">
-    <h3 id="sendStepTitle">Step 1: Choose Asset</h3>
+  <div style="background:white; padding:20px; border-radius:12px; max-width:400px; width:90%;">
+    <h3 id="wizardTitle">Step 1: Choose Asset</h3>
 
-    <div class="wizard-step" id="step1">
-      <select id="wizardAsset">
+    <!-- Step 1 -->
+    <div id="wizardStep1">
+      <label>Asset</label>
+      <select id="wizAsset">
         <option value="XLM">XLM</option>
         <option value="Laam">Laam</option>
       </select>
-      <button onclick="nextStep(2)">Next</button>
     </div>
 
-    <div class="wizard-step" id="step2" style="display:none;">
-      <input id="wizardDest" type="text" placeholder="Destination Public Key" />
-      <button onclick="nextStep(3)">Next</button>
+    <!-- Step 2 -->
+    <div id="wizardStep2" style="display:none;">
+      <label>Destination Public Key</label>
+      <input id="wizDest" type="text" placeholder="G... destination" style="width:100%" />
+      <button type="button" id="wizScan">📷 Scan</button>
     </div>
 
-    <div class="wizard-step" id="step3" style="display:none;">
-      <input id="wizardAmount" type="number" placeholder="Amount" />
-      <button onclick="nextStep(4)">Next</button>
+    <!-- Step 3 -->
+    <div id="wizardStep3" style="display:none;">
+      <label>Amount</label>
+      <input id="wizAmount" type="number" step="0.0000001" placeholder="e.g. 10" />
     </div>
 
-    <div class="wizard-step" id="step4" style="display:none;">
-      <input id="wizardMemo" type="text" placeholder="Memo (Optional)" />
-      <button onclick="nextStep(5)">Next</button>
+    <!-- Step 4 -->
+    <div id="wizardStep4" style="display:none;">
+      <label>Memo (Optional)</label>
+      <input id="wizMemo" type="text" placeholder="Memo text or ID" />
     </div>
 
-    <div class="wizard-step" id="step5" style="display:none;">
-      <p><strong>Confirm Transaction</strong></p>
-      <p>Asset: <span id="confirmAsset"></span></p>
-      <p>Destination: <span id="confirmDest"></span></p>
-      <p>Amount: <span id="confirmAmount"></span></p>
-      <p>Memo: <span id="confirmMemo"></span></p>
-      <button onclick="sendTransaction()">Send Now</button>
+    <!-- Navigation -->
+    <div style="margin-top:15px; display:flex; justify-content:space-between;">
+      <button id="prevStep" disabled>Back</button>
+      <button id="nextStep">Next</button>
     </div>
-
-    <button onclick="closeWizard()" style="margin-top:10px;">Cancel</button>
   </div>
 </div>
       
@@ -2931,43 +2925,83 @@ function addServerStatusIndicator() {
 if (document.getElementById('loggedInView') && !document.getElementById('loggedInView').classList.contains('hidden')) {
   addServerStatusIndicator();
 }
-</script>
-    <!-- ✅ QR Scanner Modal -->
-<div id="qrScannerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:white; padding:20px; border-radius:12px; max-width:400px; width:90%; text-align:center;">
-    <h3>Scan Public Key</h3>
-    <div id="qrReader" style="width:100%;"></div>
-    <button onclick="closeQrScanner()" style="margin-top:12px; padding:10px 20px; border:none; border-radius:8px; background:#dc3545; color:white; font-weight:600;">Close</button>
-  </div>
-</div>
+    <script>
+  let step = 1;
+  const totalSteps = 4;
 
-<!-- ✅ QR Library -->
-<script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-<script>
-  let qrCodeScanner;
-
-  document.getElementById("scanQrBtn").addEventListener("click", () => {
-    document.getElementById("qrScannerModal").style.display = "flex";
-    qrCodeScanner = new Html5Qrcode("qrReader");
-    qrCodeScanner.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: 250 },
-      (decodedText) => {
-        document.getElementById("sendDest").value = decodedText;
-        qrCodeScanner.stop().then(() => {
-          document.getElementById("qrScannerModal").style.display = "none";
-        });
-      }
-    );
+  // Open wizard
+  document.getElementById("openSendWizard").addEventListener("click", () => {
+    document.getElementById("sendWizard").style.display = "flex";
+    step = 1;
+    showStep();
   });
 
-  function closeQrScanner() {
-    if (qrCodeScanner) {
-      qrCodeScanner.stop();
+  // Next button
+  document.getElementById("nextStep").addEventListener("click", async () => {
+    if (step < totalSteps) {
+      step++;
+      showStep();
+    } else {
+      // ✅ Final Step: Build and Send Transaction
+      const assetCode = document.getElementById("wizAsset").value;
+      const destination = document.getElementById("wizDest").value;
+      const amount = document.getElementById("wizAmount").value;
+      const memo = document.getElementById("wizMemo").value;
+
+      try {
+        let asset;
+        if (assetCode === "XLM") {
+          asset = StellarSdk.Asset.native();
+        } else {
+          asset = new StellarSdk.Asset("Laam", "GAL4ECDAXNBMJYFCWIJ32HKVIRLCNEXY664CAZYI3EINQWPLXTMEPR64");
+        }
+
+        const account = await server.loadAccount(currentKeypair.publicKey());
+        const fee = await server.fetchBaseFee();
+
+        let txBuilder = new StellarSdk.TransactionBuilder(account, {
+          fee,
+          networkPassphrase: StellarSdk.Networks.PUBLIC
+        }).addOperation(StellarSdk.Operation.payment({
+          destination,
+          asset,
+          amount: amount.toString()
+        }));
+
+        if (memo) {
+          txBuilder = txBuilder.addMemo(StellarSdk.Memo.text(memo));
+        }
+
+        const transaction = txBuilder.setTimeout(180).build();
+        transaction.sign(currentKeypair);
+
+        await server.submitTransaction(transaction);
+        showSuccess("Transaction sent successfully!");
+      } catch (err) {
+        alert("Transaction failed: " + err.message);
+      }
+
+      document.getElementById("sendWizard").style.display = "none";
     }
-    document.getElementById("qrScannerModal").style.display = "none";
+  });
+
+  // Back button
+  document.getElementById("prevStep").addEventListener("click", () => {
+    if (step > 1) step--;
+    showStep();
+  });
+
+  // Step switcher
+  function showStep() {
+    for (let i = 1; i <= totalSteps; i++) {
+      document.getElementById("wizardStep"+i).style.display = (i===step) ? "block" : "none";
+    }
+    document.getElementById("wizardTitle").textContent =
+      "Step " + step + " of " + totalSteps;
+    document.getElementById("prevStep").disabled = (step===1);
+    document.getElementById("nextStep").textContent = (step===totalSteps) ? "Send" : "Next";
   }
-</script>
+    </script>
 </script>             
 </body>
 </html>
