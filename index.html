@@ -701,8 +701,12 @@
             <div><label for="sendAmount">Amount</label><input id="sendAmount" type="number" step="0.0000001" placeholder="e.g. 10" /></div>
           </div>
           <label for="sendDest" style="margin-top:8px;">Destination Public Key</label>
-          <input id="sendDest" type="text" placeholder="G... destination" />
-          
+<div style="display:flex; gap:8px;">
+  <input id="sendDest" type="text" placeholder="G... destination" style="flex:1;" />
+  <button type="button" id="scanQrBtn" style="background:#1976d2; color:white; border:none; border-radius:8px; padding:0 14px; font-weight:600; cursor:pointer;">
+    📷 Scan
+  </button>
+</div>
           <!-- MEMO FIELD ADDED HERE -->
           <div class="form-group">
             <label for="sendMemo">Memo (Optional)</label>
@@ -712,8 +716,6 @@
           <button id="btnSend" style="margin-top:10px;">Send Now</button>
         </div>
       </div>
-<div id="successAlert" class="custom-alert">Transaction sent successful</div>
-  <script>
       
       <!-- Enhanced Trade Section -->
       <div class="card trade-card">
@@ -1070,7 +1072,8 @@
         </div>
     </div>
 </div>
-
+<div id="successAlert" class="custom-alert">Transaction sent successful</div>
+  <script>
     // Laam token configuration
     const LAAM_TOKEN = {
       code: "Laam",
@@ -2904,6 +2907,42 @@ function addServerStatusIndicator() {
 if (document.getElementById('loggedInView') && !document.getElementById('loggedInView').classList.contains('hidden')) {
   addServerStatusIndicator();
 }
+</script>
+    <!-- ✅ QR Scanner Modal -->
+<div id="qrScannerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:white; padding:20px; border-radius:12px; max-width:400px; width:90%; text-align:center;">
+    <h3>Scan Public Key</h3>
+    <div id="qrReader" style="width:100%;"></div>
+    <button onclick="closeQrScanner()" style="margin-top:12px; padding:10px 20px; border:none; border-radius:8px; background:#dc3545; color:white; font-weight:600;">Close</button>
+  </div>
+</div>
+
+<!-- ✅ QR Library -->
+<script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+<script>
+  let qrCodeScanner;
+
+  document.getElementById("scanQrBtn").addEventListener("click", () => {
+    document.getElementById("qrScannerModal").style.display = "flex";
+    qrCodeScanner = new Html5Qrcode("qrReader");
+    qrCodeScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      (decodedText) => {
+        document.getElementById("sendDest").value = decodedText;
+        qrCodeScanner.stop().then(() => {
+          document.getElementById("qrScannerModal").style.display = "none";
+        });
+      }
+    );
+  });
+
+  function closeQrScanner() {
+    if (qrCodeScanner) {
+      qrCodeScanner.stop();
+    }
+    document.getElementById("qrScannerModal").style.display = "none";
+  }
 </script>
 </script>             
 </body>
