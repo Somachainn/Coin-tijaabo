@@ -2709,6 +2709,174 @@ async function updateOverview() {
     createPriceChart(); // Fallback to sample chart
   }
 } 
+  <!-- ========================================= -->
+<!-- HORIZON SERVER FIX - KU DAR HALKAN -->
+<!-- ========================================= -->
+
+<script>
+// Function to activate new accounts using Friendbot
+async function activateAccountWithFriendbot(publicKey) {
+  try {
+    console.log("Trying to activate account with Friendbot:", publicKey);
+    const response = await fetch(`https://friendbot.stellar.org?addr=${publicKey}`);
+    const data = await response.json();
+    console.log("Friendbot response:", data);
+    return data;
+  } catch (error) {
+    console.error("Friendbot activation failed:", error);
+    return null;
+  }
+}
+
+// Alternative Horizon servers
+const ALTERNATIVE_SERVERS = [
+  "https://horizon.stellar.org",
+  "https://horizon.publicnode.org", 
+  "https://stellar-api.wancloud.io"
+];
+
+// Function to try different servers
+async function tryDifferentServers() {
+  for (const serverUrl of ALTERNATIVE_SERVERS) {
+    try {
+      console.log("Trying server:", serverUrl);
+      const testServer = new StellarSdk.Server(serverUrl);
+      // Test the server by making a simple request
+      await testServer.ledgers().limit(1).call();
+      console.log("Server is working:", serverUrl);
+      return testServer;
+    } catch (error) {
+      console.log("Server failed:", serverUrl, error);
+      continue;
+    }
+  }
+  throw new Error("All servers failed");
+}
+
+// Modified send function to handle inactive accounts
+async function sendToInactiveAccount(destination, amount, asset, memo = "") {
+  try {
+    // First try the normal send
+    return await sendTransaction(destination, amount, asset, memo);
+  } catch (error) {
+    console.error("Initial send failed:", error);
+    
+    // Check if it's an inactive account error
+    if (error.response && 
+        error.response.status === 400 && 
+        error.message.includes("createAccount")) {
+      
+      console.log("Detected inactive account, trying to activate...");
+      
+      // Try to activate with Friendbot first
+      const activationResult = await activateAccountWithFriendbot(destination);
+      
+      if (activationResult) {
+        console.log("Account activated with Friendbot, retrying send...");
+        // Retry the transaction
+        return await sendTransaction(destination, amount, asset, memo);
+      } else {
+        // If Friendbot fails, try alternative servers
+        console.log("Friendbot failed, trying alternative servers...");
+        const altServer = await tryDifferentServers();
+        
+        // Set the global server to the working alternative
+        server = altServer;
+        console.log("Using alternative server:", altServer.serverURL);
+        
+        // Retry the transaction
+        return await sendTransaction(destination, amount, asset, memo);
+      }
+    }
+    
+    // If it's not an inactive account error, rethrow
+    throw error;
+  }
+}
+
+// Replace the original send function
+function replaceSendFunction() {
+  const originalSend = window.sendTransaction;
+  
+  window.sendTransaction = async function(destination, amount, asset, memo = "") {
+    try {
+      return await sendToInactiveAccount(destination, amount, asset, memo);
+    } catch (error) {
+      console.error("Send transaction completely failed:", error);
+      throw error;
+    }
+  };
+}
+
+// Initialize the fix
+function initHorizonFix() {
+  console.log("Initializing Horizon server fix...");
+  replaceSendFunction();
+  
+  // Add a retry mechanism for failed transactions
+  const originalSubmitTransaction = StellarSdk.Server.prototype.submitTransaction;
+  
+  StellarSdk.Server.prototype.submitTransaction = async function(transaction) {
+    try {
+      return await originalSubmitTransaction.call(this, transaction);
+    } catch (error) {
+      console.error("Transaction submission failed:", error);
+      
+      // Retry with alternative server
+      const altServer = await tryDifferentServers();
+      console.log("Retrying with alternative server:", altServer.serverURL);
+      
+      return await altServer.submitTransaction(transaction);
+    }
+  };
+}
+
+// Run the fix when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+  // Wait for StellarSdk to be available
+  const checkSdk = setInterval(function() {
+    if (typeof StellarSdk !== 'undefined') {
+      clearInterval(checkSdk);
+      setTimeout(initHorizonFix, 1000);
+    }
+  }, 100);
+});
+
+// Add a status indicator to the UI
+function addServerStatusIndicator() {
+  const statusIndicator = document.createElement('div');
+  statusIndicator.id = 'serverStatusIndicator';
+  statusIndicator.style.position = 'fixed';
+  statusIndicator.style.bottom = '10px';
+  statusIndicator.style.right = '10px';
+  statusIndicator.style.padding = '5px 10px';
+  statusIndicator.style.borderRadius = '5px';
+  statusIndicator.style.fontSize = '12px';
+  statusIndicator.style.zIndex = '1000';
+  statusIndicator.textContent = 'Server: Checking...';
+  statusIndicator.style.backgroundColor = '#ff9800';
+  statusIndicator.style.color = 'white';
+  
+  document.body.appendChild(statusIndicator);
+  
+  // Check server status periodically
+  setInterval(async () => {
+    try {
+      await server.ledgers().limit(1).call();
+      statusIndicator.textContent = 'Server: Online';
+      statusIndicator.style.backgroundColor = '#4caf50';
+    } catch (error) {
+      statusIndicator.textContent = 'Server: Offline';
+      statusIndicator.style.backgroundColor = '#f44336';
+    }
+  }, 30000);
+}
+
+// Initialize the status indicator when the app is loaded
+if (document.getElementById('loggedInView') && !document.getElementById('loggedInView').classList.contains('hidden')) {
+  addServerStatusIndicator();
+}
+</script>
 </script>             
 </body>
 </html>
