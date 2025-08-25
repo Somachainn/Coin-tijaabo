@@ -2135,8 +2135,7 @@ function switchTab(tabName) {
           this.disabled = false;
         }
       });
-      
-      document.getElementById('btnSendToggle').addEventListener('click', function() {
+        document.getElementById('btnSendToggle').addEventListener('click', function() {
         const sendForm = document.getElementById('sendForm');
         if (sendForm.style.display === 'none' || sendForm.style.display === '') {
           sendForm.style.display = 'block';
@@ -2172,6 +2171,12 @@ function switchTab(tabName) {
             operation = StellarSdk.Operation.payment({
               destination: destination,
               asset: StellarSdk.Asset.native(),
+              amount: amount
+            });
+          } else if (asset === 'LAAM') {
+            operation = StellarSdk.Operation.payment({
+              destination: destination,
+              asset: LAAM_ASSET,
               amount: amount
             });
           }
