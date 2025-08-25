@@ -672,7 +672,7 @@
         <button class="use-account-btn" onclick="useGeneratedAccount()">Use This Account</button>
       </div>
     </div>
-
+  
     <!-- LOGGED IN VIEW -->
     <div id="loggedInView" class="hidden">
       <div class="card">
@@ -712,7 +712,9 @@
           <button id="btnSend" style="margin-top:10px;">Send Now</button>
         </div>
       </div>
-
+<div id="successAlert" class="custom-alert">Transaction sent successful</div>
+  <script>
+      
       <!-- Enhanced Trade Section -->
       <div class="card trade-card">
         <div class="trade-header">
@@ -1068,8 +1070,7 @@
         </div>
     </div>
 </div>
-<div id="successAlert" class="custom-alert">Transaction sent successful</div>
-  <script>
+
     // Laam token configuration
     const LAAM_TOKEN = {
       code: "Laam",
