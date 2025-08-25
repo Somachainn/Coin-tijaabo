@@ -961,45 +961,201 @@
     </div>
   </div>
 
-  <!-- My Orders Modal -->
-  <div id="myOrdersModal" class="my-orders-modal">
-    <div class="my-orders-modal-content">
-      <div class="my-orders-modal-header">
-        <h3 class="my-orders-modal-title">My Orders</h3>
-        <button class="my-orders-modal-close" onclick="closeMyOrdersModal()">&times;</button>
-      </div>
-      
-      <div id="ordersList" class="orders-list">
-        <div class="loading-spinner"></div>
-      </div>
-      
-      <div class="order-actions">
-        <button class="order-action-btn edit-order-btn" onclick="promptEditOffer()">Edit Order</button>
-        <button class="order-action-btn cancel-order-btn" onclick="confirmCancelOffer()">Cancel Order</button>
-      </div>
-    </div>
-  </div>
+  <!-- My Orders Modal Styles -->
+<style>
+.my-orders-modal{ display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
+.my-orders-modal.show{ display:flex; }
+.my-orders-modal-content{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--rad); 
+    box-shadow:0 20px 40px rgba(0,0,0,0.15); padding:30px; max-width:500px; width:90%; 
+    max-height:90vh; overflow-y:auto;
+}
+.my-orders-modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+.my-orders-modal-title{
+    font-size:1.5rem;
+    font-weight:700;
+    color:var(--brand);
+    margin:0;
+}
+.my-orders-modal-close{
+    background:none;
+    border:none;
+    font-size:1.8rem;
+    cursor:pointer;
+    color:var(--muted);
+    padding:0;
+    width:auto;
+    height:auto;
+    box-shadow:none;
+    text-transform:none;
+}
+.my-orders-modal-close:hover{
+    color:var(--text);
+    transform:none;
+    box-shadow:none;
+}
+.orders-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px;
+}
+.order-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 15px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-items: center;
+}
+.order-item:hover {
+    background-color: #f8f9fa;
+}
+.order-item.selected {
+    border-color: var(--brand);
+    background-color: rgba(0, 82, 204, 0.1);
+}
+.order-type {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-align: center;
+}
+.order-type.buy {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--ok);
+}
+.order-type.sell {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--err);
+}
+.order-details {
+    display: flex;
+    flex-direction: column;
+}
+.order-amount {
+    font-weight: 600;
+    font-family: 'SF Mono', monospace;
+}
+.order-price {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-family: 'SF Mono', monospace;
+}
+.order-date {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: right;
+}
+.order-actions{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    margin-top: 20px;
+}
+.order-action-btn{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    text-transform:none;
+}
+.edit-order-btn{
+    background:var(--brand);
+    color:white;
+    box-shadow:0 4px 16px rgba(25,118,210,0.3);
+}
+.edit-order-btn:hover{
+    background:var(--brand2);
+    box-shadow:0 6px 20px rgba(25,118,210,0.4);
+    transform:translateY(-2px);
+}
+.edit-order-btn:disabled {
+    background: #b0bec5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+.cancel-order-btn{
+    background:var(--err);
+    color:white;
+    box-shadow:0 4px 16px rgba(220,53,69,0.3);
+}
+.cancel-order-btn:hover{
+    background:#c82333;
+    box-shadow:0 6px 20px rgba(220,53,69,0.4);
+    transform:translateY(-2px);
+}
+.cancel-order-btn:disabled {
+    background: #b0bec5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+.no-orders {
+    text-align: center;
+    padding: 30px;
+    color: var(--muted);
+    font-style: italic;
+}
+</style>
 
-  <!-- Edit Order Modal -->
-  <div id="editOrderModal" class="trade-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">Edit Order</h3>
-        <button class="modal-close" onclick="closeEditModal()">&times;</button>
-      </div>
-      <div class="panel">
-        <div class="field">
-          <label>Amount (Laam)</label>
-          <input id="editAmount" type="number" step="0.0001">
+<!-- My Orders Modal -->
+<div id="myOrdersModal" class="my-orders-modal">
+    <div class="my-orders-modal-content">
+        <div class="my-orders-modal-header">
+            <h3 class="my-orders-modal-title">My Orders</h3>
+            <button class="my-orders-modal-close" onclick="closeMyOrdersModal()">&times;</button>
         </div>
-        <div class="field">
-          <label>Price (XLM per Laam)</label>
-          <input id="editPrice" type="number" step="0.0000001">
+        
+        <div id="ordersList" class="orders-list">
+            <div class="no-orders">No active orders found</div>
         </div>
-        <button class="cta" id="confirmEditBtn">Update Order</button>
-      </div>
+        
+        <div class="order-actions">
+            <button class="order-action-btn edit-order-btn" id="editOrderBtn" onclick="promptEditOffer()" disabled>Edit Order</button>
+            <button class="order-action-btn cancel-order-btn" id="cancelOrderBtn" onclick="confirmCancelOffer()" disabled>Cancel Order</button>
+        </div>
     </div>
-  </div>
+</div>
+
+<!-- Edit Order Modal -->
+<div id="editOrderModal" class="trade-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Order</h3>
+            <button class="modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+        <div class="panel">
+            <div class="field">
+                <label>Amount (Laam)</label>
+                <input id="editAmount" type="number" step="0.0001">
+            </div>
+            <div class="field">
+                <label>Price (XLM per Laam)</label>
+                <input id="editPrice" type="number" step="0.0000001">
+            </div>
+            <button class="cta" id="confirmEditBtn">Update Order</button>
+        </div>
+    </div>
+</div>
 
   <script>
     // Laam token configuration
@@ -2657,7 +2813,134 @@ async function updateOverview() {
     
     createPriceChart(); // Fallback to sample chart
   }
-}         
+}   
+
+    <script>
+// My Orders Modal functions - UPDATED
+async function openMyOrdersModal() {
+    const modal = document.getElementById('myOrdersModal');
+    const ordersList = document.getElementById('ordersList');
+    const editBtn = document.getElementById('editOrderBtn');
+    const cancelBtn = document.getElementById('cancelOrderBtn');
+    
+    modal.classList.add('show');
+    ordersList.innerHTML = '<div class="loading-spinner" style="text-align: center; padding: 20px;"></div>';
+    editBtn.disabled = true;
+    cancelBtn.disabled = true;
+    
+    try {
+        const offers = await loadUserOffers();
+        
+        if (offers.length === 0) {
+            ordersList.innerHTML = '<div class="no-orders">No active orders found</div>';
+            return;
+        }
+        
+        let html = '';
+        offers.forEach(offer => {
+            const isSell = offer.selling.asset_code === LAAM_TOKEN.code;
+            const price = isSell ? (1/offer.price).toFixed(7) : offer.price;
+            const date = new Date(offer.last_modified_time).toLocaleTimeString();
+            
+            html += `
+                <div class="order-item" data-id="${offer.id}">
+                    <div class="order-type ${isSell ? 'sell' : 'buy'}">${isSell ? 'SELL' : 'BUY'}</div>
+                    <div class="order-details">
+                        <div class="order-amount">${offer.amount} Laam</div>
+                        <div class="order-price">${price} XLM</div>
+                    </div>
+                    <div class="order-date">${date}</div>
+                </div>
+            `;
+        });
+        
+        ordersList.innerHTML = html;
+        
+        document.querySelectorAll('.order-item').forEach(item => {
+            item.addEventListener('click', function() {
+                currentOfferId = this.getAttribute('data-id');
+                document.querySelectorAll('.order-item').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Enable buttons when an order is selected
+                editBtn.disabled = false;
+                cancelBtn.disabled = false;
+            });
+        });
+        
+    } catch (error) {
+        console.error('Error loading offers:', error);
+        ordersList.innerHTML = '<div class="no-orders">Error loading orders</div>';
+    }
+}
+
+function closeMyOrdersModal() {
+    const modal = document.getElementById('myOrdersModal');
+    modal.classList.remove('show');
+    currentOfferId = null;
+    
+    // Disable buttons when modal is closed
+    document.getElementById('editOrderBtn').disabled = true;
+    document.getElementById('cancelOrderBtn').disabled = true;
+}
+
+// Edit offer prompt - UPDATED
+async function promptEditOffer() {
+    if (!currentOfferId) {
+        showError('Please select an order first');
+        return;
+    }
+    
+    try {
+        const offer = await server.offers().offer(currentOfferId).call();
+        const isSell = offer.selling.asset_code === LAAM_TOKEN.code;
+        const price = isSell ? (1/offer.price).toFixed(7) : offer.price;
+        
+        document.getElementById('editAmount').value = offer.amount;
+        document.getElementById('editPrice').value = price;
+        
+        document.getElementById('editOrderModal').classList.add('show');
+    } catch (error) {
+        console.error('Error loading offer details:', error);
+        showError('Failed to load offer details');
+    }
+}
+
+function closeEditModal() {
+    document.getElementById('editOrderModal').classList.remove('show');
+}
+
+// Confirm cancel offer - UPDATED
+async function confirmCancelOffer() {
+    if (!currentOfferId) {
+        showError('Please select an order first');
+        return;
+    }
+    
+    if (confirm('Are you sure you want to cancel this order?')) {
+        const cancelBtn = document.getElementById('cancelOrderBtn');
+        cancelBtn.textContent = 'Cancelling...';
+        cancelBtn.disabled = true;
+        
+        try {
+            await cancelOffer(currentOfferId);
+            showSuccess('Order cancelled successfully!');
+            
+            // Refresh the orders list
+            await openMyOrdersModal();
+        } catch (error) {
+            console.error('Error cancelling offer:', error);
+            showError('Failed to cancel order: ' + error.message);
+            cancelBtn.textContent = 'Cancel Order';
+            cancelBtn.disabled = false;
+        }
+    }
+}
+
+// Update the refresh button in trade header to open My Orders
+document.querySelector('.trade-header .icon:nth-child(3)').addEventListener('click', function() {
+    openMyOrdersModal();
+});
 </script>             
 </body>
 </html>
