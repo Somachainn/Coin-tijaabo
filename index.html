@@ -509,7 +509,6 @@
   .cta.sell:hover{ background:#c82333; box-shadow:0 6px 20px rgba(220,53,69,0.4); transform:translateY(-2px); }
 
   <!-- My Orders Modal Styles -->
-<style>
 .my-orders-modal{ display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
 .my-orders-modal.show{ display:flex; }
 .my-orders-modal-content{
@@ -704,65 +703,7 @@
     </div>
 </div>
 
-  /* Animation */
-  .import-card {
-    animation: slideUp 0.6s ease-out;
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .app {
-      max-width: 100%;
-      padding: 0 10px;
-    }
-    
-    .import-card {
-      padding: 30px 20px;
-      margin: 10px;
-    }
-    
-    .logo-container img {
-      width: 60px;
-      height: 60px;
-    }
-    
-    h1 {
-      font-size: 2.2rem;
-    }
-
-    .key-modal-content {
-      padding: 30px 20px;
-      margin: 10px;
-    }
-
-    .key-display-input {
-      font-size: 12px;
-      padding: 12px 50px 12px 12px;
-    }
-
-    .copy-btn {
-      padding: 6px 8px;
-      font-size: 10px;
-    }
-
-    .market-stats {
-      grid-template-columns: 1fr;
-    }
-
-    .chart-timeframes {
-      flex-wrap: wrap;
-    }
-  }
+  
 </style>
 </head>
 <body>
