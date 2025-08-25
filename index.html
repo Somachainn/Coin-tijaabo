@@ -689,17 +689,13 @@
         <label style="margin-top:10px;">Your Public Key</label>
         <div id="pubKey" class="mono">-</div>
         <div style="display:flex; gap:10px; margin-top:16px; justify-content:center;">
-          <button id="btnSendToggle">Send</button>
+          <button id="openSendWizard" class="cta">SEND</button>
           <button id="addTrustlineBtn">Add Laam Trustline</button>
           <button id="logoutBtn" class="btn-danger">Lock Wallet</button>
         </div>
         </div>
         
-        <div id="sendForm" class="send-wrap">
-          <h4 style="margin:0 0 10px 0; color:var(--brand)">Send Assets</h4>
-          <div class="send-row">
-            <div><label for="sendAsset">Asset</label><select id="sendAsset"><option value="XLM">XLM</option><option value="LAAM">Laam</option></select></div>
-            <div><label for="sendAmount">Amount</label><input id="sendAmount" type="number" step="0.0000001" placeholder="e.g. 10" /></div>
+        
             <!-- ✅ Send Wizard Modal -->
 <div id="sendWizard" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
   <div style="background:white; padding:20px; border-radius:12px; max-width:400px; width:90%;">
