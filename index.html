@@ -590,6 +590,189 @@
       flex-wrap: wrap;
     }
   }
+        <title>Send Wizard</title>
+    <style>
+        :root {
+            --primary: #2962ff;
+            --primary-dark: #0039cb;
+            --secondary: #f5f7ff;
+            --text: #333;
+            --text-light: #666;
+            --error: #f44336;
+            --success: #4caf50;
+            --border: #e0e0e0;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f7f9fc;
+            padding: 20px;
+        }
+        
+        .wizard-container {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            max-width: 450px;
+            width: 100%;
+        }
+        
+        .wizard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .wizard-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .step-indicator {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .step {
+            height: 8px;
+            flex: 1;
+            background-color: var(--border);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background-color: var(--primary);
+        }
+        
+        .step.completed {
+            background-color: var(--success);
+        }
+        
+        .wizard-step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .wizard-step.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        label::after {
+            content: " *";
+            color: var(--error);
+        }
+        
+        .optional::after {
+            content: "" !important;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        input.error, select.error {
+            border-color: var(--error);
+        }
+        
+        .error-message {
+            color: var(--error);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .wizard-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #prevStep {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--border);
+        }
+        
+        #prevStep:hover:not(:disabled) {
+            background-color: var(--secondary);
+        }
+        
+        #nextStep, #submitBtn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        #nextStep:hover:not(:disabled), #submitBtn:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .success-message {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .success-icon {
+            font-size: 48px;
+            color: var(--success);
+            margin-bottom: 15px;
+        }
 </style>
 </head>
 <body>
