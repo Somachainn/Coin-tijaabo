@@ -1006,7 +1006,7 @@
     
     <!-- BUTTONS ROW - UPDATED DESIGN -->
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px;">
-        <button id="btnSendToggle" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #f8f9fa; color: #212529; border: 2px solid #e9ecef;">
+        <button id="openSendWizard" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #f8f9fa; color: #212529; border: 2px solid #e9ecef;">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855a.5.5 0 0 0-.087.87l4.89 3.256 3.256 4.89a.5.5 0 0 0 .87-.087L15.314.964zM5.727 9.73l4.422-4.422L5.079 6.32 5.727 9.73zm1.573-2.78l4.423-4.422-1.47 4.923-2.953-0.501z"/>
             </svg>
@@ -1032,86 +1032,74 @@
             Lock
         </button>
     </div>
-<!-- Wizard-ka Bixinta -->
-    <div class="wizard-container">
-        <div class="wizard-header">
-            <h2 class="wizard-title" id="wizardTitle">Tallaabo 1: Xulo Hanti</h2>
-        </div>
-        
-        <div class="step-indicator">
-            <div class="step active" id="step1Indicator"></div>
-            <div class="step" id="step2Indicator"></div>
-            <div class="step" id="step3Indicator"></div>
-            <div class="step" id="step4Indicator"></div>
-        </div>
-        
-        <!-- Tallaabo 1: Xulo Hanti -->
-        <div class="wizard-step active" id="wizardStep1">
-            <div class="form-group">
-                <label for="wizAsset">Nooca Hantida</label>
-                <select id="wizAsset" required>
-                    <option value="">Xulo hantida aad rabto inaad bixiso</option>
-                    <option value="XLM">XLM</option>
-                    <option value="Laam">Laam</option>
-                </select>
-                <div class="error-message" id="assetError">Fadlan xulo hantida</div>
-            </div>
-            <div class="note-box">
-                Xulo hantida aad rabto inaad dirto. Waxaa laga yaabaa inaad u baahan tahay trustline hantida Laam si aad ugu bixiso.
-            </div>
-        </div>
-        
-        <!-- Tallaabo 2: Meesha Loo Direyo -->
-        <div class="wizard-step" id="wizardStep2">
-            <div class="form-group">
-                <label for="wizDest">Public Key-ga Meesha Loo Direyo</label>
-                <input id="wizDest" type="text" placeholder="G... meesha loo direyo" required />
-                <div class="error-message" id="destError">Fadlan geli public key sax ah</div>
-            </div>
-            <div class="note-box">
-            </div>
-        </div>
-        
-        <!-- Tallaabo 3: Qadarka -->
-        <div class="wizard-step" id="wizardStep3">
-            <div class="form-group">
-                <label for="wizAmount">Qadarka</label>
-                <input id="wizAmount" type="number" step="0.0000001" placeholder="Tusaale: 10" required />
-                <div class="error-message" id="amountError">Fadlan geli qadar sax ah</div>
-            </div>
-            <div class="note-box">
-                Hubi inaad haysato qadar ku filan oo hantida aad dooratay. Xisaabinta waa inay sax tahay.
-            </div>
-        </div>
-        
-        <!-- Tallaabo 4: Memo (Ikhtiyaari) -->
-        <div class="wizard-step" id="wizardStep4">
-            <div class="form-group">
-                <label for="wizMemo" class="optional">Memo (Ikhtiyaari)</label>
-                <input id="wizMemo" type="text" placeholder="Qoraal ama ID memo ah" />
-            </div>
-            <div class="note-box">
-                Memo waa ikhtiyaari, laakiin qaarka meelaha bixinta waxay u baahan yihiin memo si loo sheego meesha lacagtu u martay.
-            </div>
-        </div>
-         
-        <!-- Farriinta Guulaysta -->
-        <div class="wizard-step" id="successStep">
-            <div class="success-message">
-                <div class="success-icon">✓</div>
-                <h3>Wax-bixintu Si Fiican Ayay U Guushay!</h3>
-                <p>Diristaada waxaa si guul leh loo dhamaystiriray.</p>
-            </div>
-        </div>
-        
-        <!-- Navigation -->
-        <div class="wizard-nav">
-            <button id="prevStep" disabled>Hore</button>
-            <button id="nextStep">Xiga</button>
-            <button id="submitBtn" style="display: none;">Dirso Hadda</button>
-        </div>
+             <!-- Send Wizard Modal -->
+  <div class="wizard-container">
+    <div class="wizard-header">
+      <h2 class="wizard-title" id="wizardTitle">Step 1: Choose Asset</h2>
     </div>
-
+    
+    <div class="step-indicator">
+      <div class="step active" id="step1Indicator"></div>
+      <div class="step" id="step2Indicator"></div>
+      <div class="step" id="step3Indicator"></div>
+      <div class="step" id="step4Indicator"></div>
+    </div>
+    
+    <!-- Step 1 -->
+    <div class="wizard-step active" id="wizardStep1">
+      <div class="form-group">
+        <label for="wizAsset">Asset</label>
+        <select id="wizAsset" required>
+          <option value="">Select an asset</option>
+          <option value="XLM">XLM</option>
+          <option value="Laam">Laam</option>
+        </select>
+        <div class="error-message" id="assetError">Please select an asset</div>
+      </div>
+    </div>
+    
+    <!-- Step 2 -->
+    <div class="wizard-step" id="wizardStep2">
+      <div class="form-group">
+        <label for="wizDest">Destination Public Key</label>
+        <input id="wizDest" type="text" placeholder="G... destination" required />
+        <div class="error-message" id="destError">Please enter a valid public key</div>
+      </div>
+    </div>
+    
+    <!-- Step 3 -->
+    <div class="wizard-step" id="wizardStep3">
+      <div class="form-group">
+        <label for="wizAmount">Amount</label>
+        <input id="wizAmount" type="number" step="0.0000001" placeholder="e.g. 10" required />
+        <div class="error-message" id="amountError">Please enter a valid amount</div>
+      </div>
+    </div>
+    
+    <!-- Step 4 -->
+    <div class="wizard-step" id="wizardStep4">
+      <div class="form-group">
+        <label for="wizMemo" class="optional">Memo (Optional)</label>
+        <input id="wizMemo" type="text" placeholder="Memo text or ID" />
+      </div>
+    </div>
+    
+    <!-- Success Message -->
+    <div class="wizard-step" id="successStep">
+      <div class="success-message">
+        <div class="success-icon">✓</div>
+        <h3>Transaction Successful!</h3>
+        <p>Your transfer has been completed successfully.</p>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="wizard-nav">
+      <button id="prevStep" disabled>Back</button>
+      <button id="nextStep">Next</button>
+      <button id="submitBtn" style="display: none;">Send</button>
+    </div>
+  </div>
       <!-- Enhanced Trade Section -->
       <div class="card trade-card">
         <div class="trade-header">
@@ -3057,7 +3045,160 @@ async function updateOverview() {
     
     createPriceChart(); // Fallback to sample chart
   }
-}         
+}  
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Elements
+      const wizardTitle = document.getElementById('wizardTitle');
+      const steps = document.querySelectorAll('.wizard-step');
+      const stepIndicators = document.querySelectorAll('.step');
+      const prevBtn = document.getElementById('prevStep');
+      const nextBtn = document.getElementById('nextStep');
+      const submitBtn = document.getElementById('submitBtn');
+      
+      // Form fields
+      const assetSelect = document.getElementById('wizAsset');
+      const destInput = document.getElementById('wizDest');
+      const amountInput = document.getElementById('wizAmount');
+      const memoInput = document.getElementById('wizMemo');
+      
+      // Error messages
+      const assetError = document.getElementById('assetError');
+      const destError = document.getElementById('destError');
+      const amountError = document.getElementById('amountError');
+      
+      let currentStep = 1;
+      const totalSteps = 4;
+      
+      // Update UI based on current step
+      function updateUI() {
+        // Update title
+        const titles = [
+          "Step 1: Choose Asset",
+          "Step 2: Destination",
+          "Step 3: Amount",
+          "Step 4: Memo (Optional)",
+          "Transaction Complete"
+        ];
+        wizardTitle.textContent = titles[currentStep - 1] || "Send Wizard";
+        
+        // Show/hide steps
+        steps.forEach((step, index) => {
+          step.classList.toggle('active', index === currentStep - 1);
+        });
+        
+        // Update step indicators
+        stepIndicators.forEach((indicator, index) => {
+          indicator.classList.toggle('active', index === currentStep - 1);
+          indicator.classList.toggle('completed', index < currentStep - 1);
+        });
+        
+        // Button visibility
+        prevBtn.disabled = currentStep === 1;
+        
+        if (currentStep < totalSteps) {
+          nextBtn.style.display = 'block';
+          submitBtn.style.display = 'none';
+        } else if (currentStep === totalSteps) {
+          nextBtn.style.display = 'none';
+          submitBtn.style.display = 'block';
+        } else {
+          nextBtn.style.display = 'none';
+          submitBtn.style.display = 'none';
+          prevBtn.style.display = 'none';
+        }
+      }
+      
+      // Validation functions
+      function validateStep1() {
+        if (!assetSelect.value) {
+          assetSelect.classList.add('error');
+          assetError.style.display = 'block';
+          return false;
+        }
+        
+        assetSelect.classList.remove('error');
+        assetError.style.display = 'none';
+        return true;
+      }
+      
+      function validateStep2() {
+        const publicKeyPattern = /^G[A-Z0-9]{55}$/;
+        if (!destInput.value || !publicKeyPattern.test(destInput.value)) {
+          destInput.classList.add('error');
+          destError.style.display = 'block';
+          return false;
+        }
+        
+        destInput.classList.remove('error');
+        destError.style.display = 'none';
+        return true;
+      }
+      
+      function validateStep3() {
+        if (!amountInput.value || parseFloat(amountInput.value) <= 0) {
+          amountInput.classList.add('error');
+          amountError.style.display = 'block';
+          return false;
+        }
+        
+        amountInput.classList.remove('error');
+        amountError.style.display = 'none';
+        return true;
+      }
+      
+      // Navigation functions
+      function goToNextStep() {
+        let isValid = true;
+        
+        switch(currentStep) {
+          case 1:
+            isValid = validateStep1();
+            break;
+          case 2:
+            isValid = validateStep2();
+            break;
+          case 3:
+            isValid = validateStep3();
+            break;
+        }
+        
+        if (isValid && currentStep < totalSteps) {
+          currentStep++;
+          updateUI();
+        }
+      }
+      
+      function goToPrevStep() {
+        if (currentStep > 1) {
+          currentStep--;
+          updateUI();
+        }
+      }
+      
+      function submitForm() {
+        // In a real application, you would send the transaction here
+        currentStep = 5; // Success step
+        updateUI();
+      }
+      
+      // Event listeners
+      nextBtn.addEventListener('click', goToNextStep);
+      prevBtn.addEventListener('click', goToPrevStep);
+      submitBtn.addEventListener('click', submitForm);
+      
+      // Real-time validation for certain fields
+      destInput.addEventListener('input', function() {
+        if (currentStep === 2) validateStep2();
+      });
+      
+      amountInput.addEventListener('input', function() {
+        if (currentStep === 3) validateStep3();
+      });
+      
+      // Initialize UI
+      updateUI();
+    });
 </script>             
 </body>
 </html>
