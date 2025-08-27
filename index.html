@@ -2439,7 +2439,7 @@ async function loadWallet() {
           this.textContent = 'Add Laam Trustline';
           this.disabled = false;
         }
-      });
+      });  
       
       document.getElementById('btnSendToggle').addEventListener('click', function() {
         const sendForm = document.getElementById('sendForm');
@@ -2491,78 +2491,7 @@ document.getElementById('btnReceive').addEventListener('click', function() {
     document.body.appendChild(receiveModal);
 });
       
-      document.getElementById('btnSend').addEventListener('click', async function() {
-        const asset = document.getElementById('sendAsset').value;
-        const amount = document.getElementById('sendAmount').value;
-        const destination = document.getElementById('sendDest').value;
-        const memo = document.getElementById('sendMemo').value;
-        
-        if (!amount || !destination) {
-          showError('Please fill in all fields.');
-          return;
-        }
-        
-        if (!currentKeypair) {
-          showError('Wallet not loaded.');
-          return;
-        }
-        
-        this.textContent = 'Sending...';
-        this.disabled = true;
-        
-        try {
-          const account = await server.loadAccount(currentKeypair.publicKey());
-          
-          let operation;
-          if (asset === 'XLM') {
-            operation = StellarSdk.Operation.payment({
-              destination: destination,
-              asset: StellarSdk.Asset.native(),
-              amount: amount
-            });
-          } else if (asset === 'LAAM') {
-            operation = StellarSdk.Operation.payment({
-              destination: destination,
-              asset: LAAM_ASSET,
-              amount: amount
-            });
-          }
-          
-          const transactionBuilder = new StellarSdk.TransactionBuilder(account, {
-            fee: StellarSdk.BASE_FEE,
-            networkPassphrase: StellarSdk.Networks.PUBLIC
-          });
-
-          if (memo) {
-            transactionBuilder.addMemo(StellarSdk.Memo.text(memo));
-          }
-
-          const transaction = transactionBuilder
-            .addOperation(operation)
-            .setTimeout(180)
-            .build();
-          
-          transaction.sign(currentKeypair);
-          
-          const result = await server.submitTransaction(transaction);
-          
-          showSuccess('Transaction sent successfully!');
-          
-          document.getElementById('sendAmount').value = '';
-          document.getElementById('sendDest').value = '';
-          document.getElementById('sendMemo').value = '';
-          document.getElementById('sendForm').style.display = 'none';
-          
-          await updateBalanceDisplay();
-          
-        } catch (error) {
-          console.error('Send transaction error:', error);
-          showError('Failed to send transaction: ' + error.message);
-        } finally {
-          this.textContent = 'Send Now';
-          this.disabled = false;
-        }
-      });
+      
         
       // Tab switching event listeners
       document.getElementById('overviewTab').addEventListener('click', () => switchTab('overview'));
