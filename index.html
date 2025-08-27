@@ -2437,158 +2437,142 @@ async function loadWallet() {
           this.disabled = false;
         }
       });  
-      
-      document.addEventListener('DOMContentLoaded', function() {
-      // Elements
-      const wizardTitle = document.getElementById('wizardTitle');
-      const steps = document.querySelectorAll('.wizard-step');
-      const stepIndicators = document.querySelectorAll('.step');
-      const prevBtn = document.getElementById('prevStep');
-      const nextBtn = document.getElementById('nextStep');
-      const submitBtn = document.getElementById('submitBtn');
-      
-      // Form fields
-      const assetSelect = document.getElementById('wizAsset');
-      const destInput = document.getElementById('wizDest');
-      const amountInput = document.getElementById('wizAmount');
-      const memoInput = document.getElementById('wizMemo');
-      
-      // Error messages
-      const assetError = document.getElementById('assetError');
-      const destError = document.getElementById('destError');
-      const amountError = document.getElementById('amountError');
-      
-      let currentStep = 1;
-      const totalSteps = 4;
-      
-      // Update UI based on current step
-      function updateUI() {
-        // Update title
-        const titles = [
-          "Step 1: Choose Asset",
-          "Step 2: Destination",
-          "Step 3: Amount",
-          "Step 4: Memo (Optional)",
-          "Transaction Complete"
-        ];
-        wizardTitle.textContent = titles[currentStep - 1] || "Send Wizard";
-        
-        // Show/hide steps
-        steps.forEach((step, index) => {
-          step.classList.toggle('active', index === currentStep - 1);
-        });
-        
-        // Update step indicators
-        stepIndicators.forEach((indicator, index) => {
-          indicator.classList.toggle('active', index === currentStep - 1);
-          indicator.classList.toggle('completed', index < currentStep - 1);
-        });
-        
-        // Button visibility
-        prevBtn.disabled = currentStep === 1;
-        
-        if (currentStep < totalSteps) {
-          nextBtn.style.display = 'block';
-          submitBtn.style.display = 'none';
-        } else if (currentStep === totalSteps) {
-          nextBtn.style.display = 'none';
-          submitBtn.style.display = 'block';
-        } else {
-          nextBtn.style.display = 'none';
-          submitBtn.style.display = 'none';
-          prevBtn.style.display = 'none';
-        }
-      }
-      
-      // Validation functions
-      function validateStep1() {
-        if (!assetSelect.value) {
-          assetSelect.classList.add('error');
-          assetError.style.display = 'block';
-          return false;
-        }
-        
-        assetSelect.classList.remove('error');
-        assetError.style.display = 'none';
-        return true;
-      }
-      
-      function validateStep2() {
-        const publicKeyPattern = /^G[A-Z0-9]{55}$/;
-        if (!destInput.value || !publicKeyPattern.test(destInput.value)) {
-          destInput.classList.add('error');
-          destError.style.display = 'block';
-          return false;
-        }
-        
-        destInput.classList.remove('error');
-        destError.style.display = 'none';
-        return true;
-      }
-      
-      function validateStep3() {
-        if (!amountInput.value || parseFloat(amountInput.value) <= 0) {
-          amountInput.classList.add('error');
-          amountError.style.display = 'block';
-          return false;
-        }
-        
-        amountInput.classList.remove('error');
-        amountError.style.display = 'none';
-        return true;
-      }
-      // Navigation functions
-      function goToNextStep() {
-        let isValid = true;
-        
-        switch(currentStep) {
-          case 1:
-            isValid = validateStep1();
-            break;
-          case 2:
-            isValid = validateStep2();
-            break;
-          case 3:
-            isValid = validateStep3();
-            break;
-        }
-        
-        if (isValid && currentStep < totalSteps) {
-          currentStep++;
-          updateUI();
-        }
-      }
-      
-      function goToPrevStep() {
-        if (currentStep > 1) {
-          currentStep--;
-          updateUI();
-        }
-      }
-      
-      function submitForm() {
-        // In a real application, you would send the transaction here
-        currentStep = 5; // Success step
-        updateUI();
-      }
-      
-      // Event listeners
-      nextBtn.addEventListener('click', goToNextStep);
-      prevBtn.addEventListener('click', goToPrevStep);
-      submitBtn.addEventListener('click', submitForm);
-      
-      // Real-time validation for certain fields
-      destInput.addEventListener('input', function() {
-        if (currentStep === 2) validateStep2();
-      });
-      
-      amountInput.addEventListener('input', function() {
-        if (currentStep === 3) validateStep3();
-      });
-      
-      // Initialize UI
+      document.addEventListener('DOMContentLoaded', () => {
+  // Step control
+  let currentStep = 1;
+  const totalSteps = 4;
+
+  // Element references
+  const nextBtn = document.getElementById('nextStep');
+  const prevBtn = document.getElementById('prevStep');
+  const submitBtn = document.getElementById('submitBtn');
+
+  const assetInput = document.getElementById('wizAsset');
+  const destInput = document.getElementById('wizDest');
+  const amountInput = document.getElementById('wizAmount');
+  const memoInput = document.getElementById('wizMemo');
+
+  const assetError = document.getElementById('assetError');
+  const destError = document.getElementById('destError');
+  const amountError = document.getElementById('amountError');
+
+  // Step validation functions
+  function validateStep1() {
+    if (!assetInput.value) {
+      assetInput.classList.add('error');
+      assetError.style.display = 'block';
+      return false;
+    }
+    assetInput.classList.remove('error');
+    assetError.style.display = 'none';
+    return true;
+  }
+
+  function validateStep2() {
+    const publicKeyPattern = /^G[A-Z0-9]{55}$/;
+    if (!destInput.value || !publicKeyPattern.test(destInput.value)) {
+      destInput.classList.add('error');
+      destError.style.display = 'block';
+      return false;
+    }
+    destInput.classList.remove('error');
+    destError.style.display = 'none';
+    return true;
+  }
+
+  function validateStep3() {
+    if (!amountInput.value || parseFloat(amountInput.value) <= 0) {
+      amountInput.classList.add('error');
+      amountError.style.display = 'block';
+      return false;
+    }
+    amountInput.classList.remove('error');
+    amountError.style.display = 'none';
+    return true;
+  }
+
+  // Update UI function
+  function updateUI() {
+    for (let i = 1; i <= totalSteps; i++) {
+      const stepDiv = document.getElementById('wizardStep' + i);
+      if (stepDiv) stepDiv.style.display = (i === currentStep) ? 'block' : 'none';
+    }
+
+    // Success step
+    const successStep = document.getElementById('successStep');
+    if (currentStep === totalSteps + 1) {
+      successStep.style.display = 'block';
+    } else {
+      successStep.style.display = 'none';
+    }
+
+    // Update navigation buttons
+    prevBtn.disabled = (currentStep === 1);
+    if (currentStep === totalSteps) {
+      nextBtn.style.display = 'none';
+      submitBtn.style.display = 'inline-block';
+    } else {
+      nextBtn.style.display = 'inline-block';
+      submitBtn.style.display = 'none';
+    }
+
+    // Update wizard title
+    const wizardTitle = document.getElementById('wizardTitle');
+    if (currentStep <= totalSteps) {
+      wizardTitle.textContent = "Step " + currentStep + " of " + totalSteps;
+    } else {
+      wizardTitle.textContent = "Success!";
+    }
+  }
+
+  // Navigation functions
+  function goToNextStep() {
+    let isValid = true;
+    switch(currentStep) {
+      case 1: isValid = validateStep1(); break;
+      case 2: isValid = validateStep2(); break;
+      case 3: isValid = validateStep3(); break;
+    }
+    if (isValid && currentStep < totalSteps) {
+      currentStep++;
       updateUI();
-    });
+    }
+  }
+
+  function goToPrevStep() {
+    if (currentStep > 1) {
+      currentStep--;
+      updateUI();
+    }
+  }
+
+  async function submitForm() {
+    // Optional: insert your Stellar transaction logic here
+    // Example: console.log(assetInput.value, destInput.value, amountInput.value, memoInput.value);
+    
+    // After successful transaction
+    currentStep = totalSteps + 1; // Show success step
+    updateUI();
+
+    // Reset fields
+    assetInput.value = '';
+    destInput.value = '';
+    amountInput.value = '';
+    memoInput.value = '';
+  }
+
+  // Event listeners
+  nextBtn.addEventListener('click', goToNextStep);
+  prevBtn.addEventListener('click', goToPrevStep);
+  submitBtn.addEventListener('click', submitForm);
+
+  // Real-time validation
+  destInput.addEventListener('input', () => { if(currentStep===2) validateStep2(); });
+  amountInput.addEventListener('input', () => { if(currentStep===3) validateStep3(); });
+
+  // Initialize UI
+  updateUI();
+});
         
 // Event listener for the new Receive button
 document.getElementById('btnReceive').addEventListener('click', function() {
