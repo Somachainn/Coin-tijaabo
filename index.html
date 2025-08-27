@@ -878,74 +878,46 @@
           <button id="logoutBtn" class="btn-danger">Lock Wallet</button>
         </div>
         </div>
-          <!-- Send Wizard Modal -->
-    <div class="wizard-container">
-        <div class="wizard-header">
-            <h2 class="wizard-title" id="wizardTitle">Step 1: Choose Asset</h2>
-        </div>
-        
-        <div class="step-indicator">
-            <div class="step active" id="step1Indicator"></div>
-            <div class="step" id="step2Indicator"></div>
-            <div class="step" id="step3Indicator"></div>
-            <div class="step" id="step4Indicator"></div>
-        </div>
-        
-        <!-- Step 1 -->
-        <div class="wizard-step active" id="wizardStep1">
-            <div class="form-group">
-                <label for="wizAsset">Asset</label>
-                <select id="wizAsset" required>
-                    <option value="">Select an asset</option>
-                    <option value="XLM">XLM</option>
-                    <option value="Laam">Laam</option>
-                </select>
-                <div class="error-message" id="assetError">Please select an asset</div>
-            </div>
-        </div>
-        
-        <!-- Step 2 -->
-        <div class="wizard-step" id="wizardStep2">
-            <div class="form-group">
-                <label for="wizDest">Destination Public Key</label>
-                <input id="wizDest" type="text" placeholder="G... destination" required />
-                <div class="error-message" id="destError">Please enter a valid public key</div>
-            </div>
-        </div>
-        
-        <!-- Step 3 -->
-        <div class="wizard-step" id="wizardStep3">
-            <div class="form-group">
-                <label for="wizAmount">Amount</label>
-                <input id="wizAmount" type="number" step="0.0000001" placeholder="e.g. 10" required />
-                <div class="error-message" id="amountError">Please enter a valid amount</div>
-            </div>
-        </div>
-        
-        <!-- Step 4 -->
-        <div class="wizard-step" id="wizardStep4">
-            <div class="form-group">
-                <label for="wizMemo" class="optional">Memo (Optional)</label>
-                <input id="wizMemo" type="text" placeholder="Memo text or ID" />
-            </div>
-        </div>
-        
-        <!-- Success Message -->
-        <div class="wizard-step" id="successStep">
-            <div class="success-message">
-                <div class="success-icon">✓</div>
-                <h3>Transaction Successful!</h3>
-                <p>Your transfer has been completed successfully.</p>
-            </div>
-        </div>
-        
-        <!-- Navigation -->
-        <div class="wizard-nav">
-            <button id="prevStep" disabled>Back</button>
-            <button id="nextStep">Next</button>
-            <button id="submitBtn" style="display: none;">Send</button>
-        </div>
+          <!-- ✅ Send Wizard Modal -->
+<div id="sendWizard" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:white; padding:20px; border-radius:12px; max-width:400px; width:90%;">
+    <h3 id="wizardTitle">Step 1: Choose Asset</h3>
+
+    <!-- Step 1 -->
+    <div id="wizardStep1">
+      <label>Asset</label>
+      <select id="wizAsset">
+        <option value="XLM">XLM</option>
+        <option value="Laam">Laam</option>
+      </select>
     </div>
+
+    <!-- Step 2 -->
+    <div id="wizardStep2" style="display:none;">
+      <label>Destination Public Key</label>
+      <input id="wizDest" type="text" placeholder="G... destination" style="width:100%" />
+      <button type="button" id="wizScan">📷 Scan</button>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="wizardStep3" style="display:none;">
+      <label>Amount</label>
+      <input id="wizAmount" type="number" step="0.0000001" placeholder="e.g. 10" />
+    </div>
+
+    <!-- Step 4 -->
+    <div id="wizardStep4" style="display:none;">
+      <label>Memo (Optional)</label>
+      <input id="wizMemo" type="text" placeholder="Memo text or ID" />
+    </div>
+
+    <!-- Navigation -->
+    <div style="margin-top:15px; display:flex; justify-content:space-between;">
+      <button id="prevStep" disabled>Back</button>
+      <button id="nextStep">Next</button>
+    </div>
+  </div>
+</div>
       
       <!-- Enhanced Trade Section -->
       <div class="card trade-card">
