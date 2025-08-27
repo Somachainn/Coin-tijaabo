@@ -26,6 +26,229 @@
 <!-- Add Chart.js for beautiful charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+        :root {
+            --bg1: #eef2f3;
+            --bg2: #8e9eab;
+            --card: rgba(255, 255, 255, 0.9);
+            --text: #0a192f;
+            --muted: #546e7a;
+            --brand: #0052cc;
+            --brand2: #0041a3;
+            --line: #d0d8e0;
+            --ok: #28a745;
+            --warn: #ffc107;
+            --err: #dc3545;
+            --maxw: 920px;
+            --rad: 16px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #b8c6db, #f5f7fa);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text);
+        }
+        
+        .wizard-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 30px;
+            max-width: 450px;
+            width: 100%;
+        }
+        
+        .wizard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .wizard-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--brand);
+        }
+        
+        .step-indicator {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .step {
+            height: 8px;
+            flex: 1;
+            background-color: var(--line);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background-color: var(--brand);
+        }
+        
+        .step.completed {
+            background-color: var(--ok);
+        }
+        
+        .wizard-step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .wizard-step.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--brand);
+        }
+        
+        label::after {
+            content: " *";
+            color: var(--err);
+        }
+        
+        .optional::after {
+            content: "" !important;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--line);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+        }
+        
+        input.error, select.error {
+            border-color: var(--err);
+        }
+        
+        .error-message {
+            color: var(--err);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .wizard-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #prevStep {
+            background-color: white;
+            color: var(--brand);
+            border: 2px solid var(--line);
+        }
+        
+        #prevStep:hover:not(:disabled) {
+            background-color: var(--bg1);
+        }
+        
+        #nextStep, #submitBtn {
+            background-color: var(--brand);
+            color: white;
+            box-shadow: 0 4px 14px rgba(0, 82, 204, 0.3);
+        }
+        
+        #nextStep:hover:not(:disabled), #submitBtn:hover:not(:disabled) {
+            background-color: var(--brand2);
+            box-shadow: 0 6px 18px rgba(0, 65, 163, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .success-message {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .success-icon {
+            font-size: 48px;
+            color: var(--ok);
+            margin-bottom: 15px;
+        }
+        
+        .success-message h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--ok);
+        }
+        
+        .note-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--brand);
+            padding: 12px 16px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 480px) {
+            .wizard-container {
+                padding: 20px;
+            }
+            
+            .wizard-title {
+                font-size: 1.3rem;
+            }
+            
+            button {
+                padding: 12px 20px;
+            }
+        }
+    
+    <style>
   :root{
     /* Blue & White Theme */
     --bg1:#eef2f3; --bg2:#8e9eab;
@@ -809,25 +1032,85 @@
             Lock
         </button>
     </div>
-
-    <div id="sendForm" class="send-wrap">
-        <h4 style="margin:0 0 10px 0; color:var(--brand)">Send Assets</h4>
-        <div class="send-row">
-            <div><label for="sendAsset">Asset</label><select id="sendAsset"><option value="XLM">XLM</option><option value="LAAM">Laam</option></select></div>
-            <div><label for="sendAmount">Amount</label><input id="sendAmount" type="number" step="0.0000001" placeholder="e.g. 10" /></div>
-        </div>
-        <label for="sendDest" style="margin-top:8px;">Destination Public Key</label>
-        <input id="sendDest" type="text" placeholder="G... destination" />
-        
-        <!-- MEMO FIELD ADDED HERE -->
-        <div class="form-group">
-            <label for="sendMemo">Memo (Optional)</label>
-            <input class="form-input" id="sendMemo" type="text" placeholder="Memo text or ID" />
+<!-- Wizard-ka Bixinta -->
+    <div class="wizard-container">
+        <div class="wizard-header">
+            <h2 class="wizard-title" id="wizardTitle">Tallaabo 1: Xulo Hanti</h2>
         </div>
         
-        <button id="btnSend" style="margin-top:10px;">Send Now</button>
+        <div class="step-indicator">
+            <div class="step active" id="step1Indicator"></div>
+            <div class="step" id="step2Indicator"></div>
+            <div class="step" id="step3Indicator"></div>
+            <div class="step" id="step4Indicator"></div>
+        </div>
+        
+        <!-- Tallaabo 1: Xulo Hanti -->
+        <div class="wizard-step active" id="wizardStep1">
+            <div class="form-group">
+                <label for="wizAsset">Nooca Hantida</label>
+                <select id="wizAsset" required>
+                    <option value="">Xulo hantida aad rabto inaad bixiso</option>
+                    <option value="XLM">XLM</option>
+                    <option value="Laam">Laam</option>
+                </select>
+                <div class="error-message" id="assetError">Fadlan xulo hantida</div>
+            </div>
+            <div class="note-box">
+                Xulo hantida aad rabto inaad dirto. Waxaa laga yaabaa inaad u baahan tahay trustline hantida Laam si aad ugu bixiso.
+            </div>
+        </div>
+        
+        <!-- Tallaabo 2: Meesha Loo Direyo -->
+        <div class="wizard-step" id="wizardStep2">
+            <div class="form-group">
+                <label for="wizDest">Public Key-ga Meesha Loo Direyo</label>
+                <input id="wizDest" type="text" placeholder="G... meesha loo direyo" required />
+                <div class="error-message" id="destError">Fadlan geli public key sax ah</div>
+            </div>
+            <div class="note-box">
+            </div>
+        </div>
+        
+        <!-- Tallaabo 3: Qadarka -->
+        <div class="wizard-step" id="wizardStep3">
+            <div class="form-group">
+                <label for="wizAmount">Qadarka</label>
+                <input id="wizAmount" type="number" step="0.0000001" placeholder="Tusaale: 10" required />
+                <div class="error-message" id="amountError">Fadlan geli qadar sax ah</div>
+            </div>
+            <div class="note-box">
+                Hubi inaad haysato qadar ku filan oo hantida aad dooratay. Xisaabinta waa inay sax tahay.
+            </div>
+        </div>
+        
+        <!-- Tallaabo 4: Memo (Ikhtiyaari) -->
+        <div class="wizard-step" id="wizardStep4">
+            <div class="form-group">
+                <label for="wizMemo" class="optional">Memo (Ikhtiyaari)</label>
+                <input id="wizMemo" type="text" placeholder="Qoraal ama ID memo ah" />
+            </div>
+            <div class="note-box">
+                Memo waa ikhtiyaari, laakiin qaarka meelaha bixinta waxay u baahan yihiin memo si loo sheego meesha lacagtu u martay.
+            </div>
+        </div>
+         
+        <!-- Farriinta Guulaysta -->
+        <div class="wizard-step" id="successStep">
+            <div class="success-message">
+                <div class="success-icon">✓</div>
+                <h3>Wax-bixintu Si Fiican Ayay U Guushay!</h3>
+                <p>Diristaada waxaa si guul leh loo dhamaystiriray.</p>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="wizard-nav">
+            <button id="prevStep" disabled>Hore</button>
+            <button id="nextStep">Xiga</button>
+            <button id="submitBtn" style="display: none;">Dirso Hadda</button>
+        </div>
     </div>
-       </div>
 
       <!-- Enhanced Trade Section -->
       <div class="card trade-card">
@@ -853,7 +1136,7 @@
             </div>
           </div>
         </div>
-        
+      
         <!-- Enhanced Trade Tabs -->
         <div class="trade-tabs">
           <div class="tab" id="overviewTab">Overview</div>
