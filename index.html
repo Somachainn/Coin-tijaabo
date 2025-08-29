@@ -1862,38 +1862,57 @@ async function loadWallet() {
         throw error;
       }
     }
-
-    // My Orders Modal functionsordersList.innerHTML = '<p style="text-align:center; padding:20px;">Error loading orders</p>';
-      async function openMyOrdersModal() {
+    async function openMyOrdersModal() {
   if (!currentKeypair) return showError("Please unlock wallet first.");
 
   document.getElementById("myOrdersModal").classList.add("show");
   const ordersList = document.getElementById("ordersList");
-  ordersList.innerHTML = '<div class="loading-spinner"></div> Loading orders...';
+  ordersList.innerHTML = '<div class="loading-spinner"></div> Loading your orders...';
 
   try {
-    // ✅ Kaliya soo qaado offers-ka account-ka user-ka hadda
     const offers = await server.offers('accounts', currentKeypair.publicKey()).call();
 
     ordersList.innerHTML = "";
-    if (offers.records.length === 0) {
-      ordersList.innerHTML = "<p>No active orders found.</p>";
+    const filtered = offers.records.filter(offer => {
+      // SELL LAAM / BUY XLM
+      const isSellingLaam = offer.selling.asset_code === "Laam" && offer.selling.asset_issuer === "GAL4ECDAXNBMJYFCWIJ32HKVIRLCNEXY664CAZYI3EINQWPLXTMEPR64" && offer.buying.asset_type === "native";
+      
+      // BUY LAAM / SELL XLM
+      const isBuyingLaam = offer.buying.asset_code === "Laam" && offer.buying.asset_issuer === "GAL4ECDAXNBMJYFCWIJ32HKVIRLCNEXY664CAZYI3EINQWPLXTMEPR64" && offer.selling.asset_type === "native";
+
+      return isSellingLaam || isBuyingLaam;
+    });
+
+    if (filtered.length === 0) {
+      ordersList.innerHTML = "<p>No active Laam/XLM orders found.</p>";
       return;
     }
 
-    offers.records.forEach(offer => {
+    filtered.forEach(offer => {
       const div = document.createElement("div");
       div.className = "order-item";
       div.dataset.offerId = offer.id;
       div.dataset.amount = offer.amount;
       div.dataset.price = offer.price;
 
+      // go'aami nooca order
+      let orderType, orderAsset;
+      if (offer.selling.asset_type === "native") {
+        orderType = "SELL";
+        orderAsset = "XLM";
+      } else {
+        orderType = "SELL";
+        orderAsset = "Laam";
+      }
+      if (offer.buying.asset_code === "Laam") {
+        orderType = "BUY";
+        orderAsset = "Laam";
+      }
+
       div.innerHTML = `
         <div>
-          <div class="order-type ${offer.selling.asset_type === 'native' ? 'sell' : 'buy'}">
-            ${offer.selling.asset_type === 'native' ? 'SELL' : 'BUY'}
-          </div>
-          <div class="order-amount">${offer.amount} ${offer.selling.asset_code || 'XLM'}</div>
+          <div class="order-type ${orderType.toLowerCase()}">${orderType}</div>
+          <div class="order-amount">${offer.amount} ${orderAsset}</div>
         </div>
         <div class="order-price">@ ${offer.price}</div>
       `;
@@ -1909,10 +1928,9 @@ async function loadWallet() {
 
   } catch (err) {
     console.error("Error fetching offers:", err);
-    ordersList.innerHTML = "<p>Error loading your orders. Please try again.</p>";
+    ordersList.innerHTML = "<p>Error loading your Laam/XLM orders. Please try again.</p>";
   }
-      }
-
+    }
     function closeMyOrdersModal() {
       const modal = document.getElementById('myOrdersModal');
       modal.classList.remove('show');
