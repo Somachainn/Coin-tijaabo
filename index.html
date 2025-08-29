@@ -832,9 +832,11 @@
       <!-- Enhanced Trade Section -->
       <div class="card trade-card">
         <div class="trade-header">
-          <span class="icon">←</span>
-          <h3>Trade</h3>
-          <span class="icon" id="refreshOB" onclick="openMyOrdersModal()">↻</span>
+  <span class="icon">←</span>
+  <h3>Trade</h3>
+  <button id="myOrdersBtn" style="padding:6px 12px; border-radius:8px; background:#1976d2; color:white; font-weight:600; border:none; cursor:pointer;">
+    My Orders
+  </button>
         </div>
         <div class="trade-asset-selector">
           <div class="asset-box">
@@ -2778,7 +2780,9 @@ async function updateOverview() {
     
     createPriceChart(); // Fallback to sample chart
   }
-}         
+}  
+// ku xiro My Orders button function-ka
+document.getElementById("myOrdersBtn").addEventListener("click", openMyOrdersModal);
 </script>             
 </body>
 </html>
